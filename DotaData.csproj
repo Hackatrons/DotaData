@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Db\Scripts\001 - Create schemas.sql" />
     <None Remove="Db\Scripts\002 - Create match tables.sql" />
+    <None Remove="Db\Scripts\003 - Create heroes table.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Db\Scripts\001 - Create schemas.sql" />
+    <EmbeddedResource Include="Db\Scripts\003 - Create heroes table.sql" />
     <EmbeddedResource Include="Db\Scripts\002 - Create match tables.sql" />
   </ItemGroup>
 

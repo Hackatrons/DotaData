@@ -5,14 +5,14 @@ using Microsoft.Extensions.Logging;
 
 namespace DotaData;
 
-internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImporter matchImporter) : BackgroundService
+internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImporter matchImporter, HeroImporter heroImporter) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Initialising database");
         db.Init();
 
-        logger.LogInformation("Importing matches");
+        await heroImporter.Import(stoppingToken);
         await matchImporter.Import(stoppingToken);
 
         await host.StopAsync(stoppingToken);

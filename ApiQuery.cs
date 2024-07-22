@@ -32,6 +32,15 @@ internal class ApiQuery
     }
 
     /// <summary>
+    /// Specifies heroes should be retrieved
+    /// </summary>
+    public ApiQuery Heroes()
+    {
+        _path = "/api/heroes";
+        return this;
+    }
+
+    /// <summary>
     /// Specifies whether to include significant results.
     /// </summary>
     public ApiQuery Significant(bool significant)

@@ -15,6 +15,7 @@ builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("Databas
 
 builder.Services.AddSingleton<Runner>();
 builder.Services.AddSingleton<MatchImporter>();
+builder.Services.AddSingleton<HeroImporter>();
 builder.Services.AddSingleton<DbUpgradeLogger>();
 builder.Services.AddSingleton<Database>();
 builder.Services.AddHttpClient();
