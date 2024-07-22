@@ -1,5 +1,5 @@
 ﻿create table Raw.Hero(
-    Id bigint not null,
+    Id int not null,
     Name nvarchar(255) not null,
     LocalizedName nvarchar(255) not null,
     PrimaryAttr varchar(10) not null,
