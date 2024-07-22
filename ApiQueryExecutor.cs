@@ -12,7 +12,7 @@ internal static class ApiQueryExecutor
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
-    public static async Task<IEnumerable<T?>> Execute<T>(this ApiQuery query, HttpClient client, CancellationToken cancellationToken = new())
+    public static async Task<IEnumerable<T>> Execute<T>(this ApiQuery query, HttpClient client, CancellationToken cancellationToken = new())
     {
         var url = query.ToString();
 
@@ -21,8 +21,9 @@ internal static class ApiQueryExecutor
 
         return json.RootElement.EnumerateArray()
             .Select(x => x.Deserialize<T>(Options))
+            .Where(x => x is not null)
             // evaluate the enumerable to avoid accessing a disposed json document
             // as the json document gets disposed after this method ends
-            .ToList();
+            .ToList()!;
     }
 }

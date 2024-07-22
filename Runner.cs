@@ -1,5 +1,7 @@
 ﻿using Dapper;
 using DotaData.Db;
+using DotaData.Db.Domain;
+using DotaData.Db.Mapping;
 using DotaData.Json;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Hosting;
@@ -20,17 +22,18 @@ internal class Runner(IHost host, ILogger<Runner> logger, HttpClient client, Dat
             .Matches()
             .Significant(false)
             .Execute<OpenDotaMatch>(client, cancellationToken: stoppingToken))
+            .Select(MatchMapper.ToDb)
             .ToList();
 
         logger.LogInformation("Retrieved {count} matches from the API", results.Count);
 
-        await Import(results!, stoppingToken);
+        await Import(results, stoppingToken);
         logger.LogInformation("Updated database with new matches");
 
         await host.StopAsync(stoppingToken);
     }
 
-    async Task Import(IList<OpenDotaMatch> matches, CancellationToken cancellationToken)
+    async Task Import(IList<Match> matches, CancellationToken cancellationToken)
     {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
@@ -49,7 +52,7 @@ internal class Runner(IHost host, ILogger<Runner> logger, HttpClient client, Dat
         bulkCopy.LoadColumnMappings<OpenDotaMatch>();
 
         var dt = matches.ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt,  cancellationToken);
+        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }
 }
