@@ -2,5 +2,5 @@
 go
 create schema Staging
 go
-create schema Report
+create schema Reporting
 go
