@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotaData;
 
-internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImporter matchImporter, HeroImporter heroImporter) : BackgroundService
+internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImporter matchImporter, HeroImporter heroImporter, PlayerTotalImporter playerTotalImporter) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -14,6 +14,7 @@ internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImpo
 
         await heroImporter.Import(stoppingToken);
         await matchImporter.Import(stoppingToken);
+        await playerTotalImporter.Import(stoppingToken);
 
         await host.StopAsync(stoppingToken);
     }

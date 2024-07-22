@@ -2,7 +2,7 @@
 
 internal class Match
 {
-    public long? MatchId { get; set; }
+    public long MatchId { get; set; }
     public int? PlayerSlot { get; set; }
     public bool? RadiantWin { get; set; }
     public int? GameMode { get; set; }

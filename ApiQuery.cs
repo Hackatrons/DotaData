@@ -23,7 +23,7 @@ internal class ApiQuery
     }
 
     /// <summary>
-    /// Specifies matches should be retrieved
+    /// Specifies matches should be retrieved.
     /// </summary>
     public ApiQuery Matches()
     {
@@ -32,7 +32,16 @@ internal class ApiQuery
     }
 
     /// <summary>
-    /// Specifies heroes should be retrieved
+    /// Specifies totals should be retrieved.
+    /// </summary>
+    public ApiQuery Totals()
+    {
+        _subPath = "totals";
+        return this;
+    }
+
+    /// <summary>
+    /// Specifies heroes should be retrieved.
     /// </summary>
     public ApiQuery Heroes()
     {

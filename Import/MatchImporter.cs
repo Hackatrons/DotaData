@@ -12,17 +12,9 @@ namespace DotaData.Import;
 
 internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, Database db)
 {
-    static readonly int[] PlayerIds =
-    [
-        // hack
-        18593752,
-        // raph
-        15065135
-    ];
-
     public async Task Import(CancellationToken stoppingToken)
     {
-        var queries = await Task.WhenAll(PlayerIds.Select(async id => new
+        var queries = await Task.WhenAll(PlayerId.All.Select(async id => new
         {
             PlayerId = id,
             // TODO: maybe run in parallel
@@ -141,7 +133,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // as by default it uses ordinal positions which may differ between the sql table and the c# type
         bulkCopy.LoadColumnMappings<PlayerMatch>();
 
-        var dt = matches.Select(x => new PlayerMatch { PlayerId = playerId, MatchId = x.MatchId ?? throw new InvalidDataException("MatchId cannot be null") }).ToDataTable();
+        var dt = matches.Select(x => new PlayerMatch { PlayerId = playerId, MatchId = x.MatchId}).ToDataTable();
         await bulkCopy.WriteToServerAsync(dt, cancellationToken);
 
         // only insert new items that we don't already know about

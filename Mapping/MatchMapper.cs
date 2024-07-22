@@ -17,7 +17,7 @@ internal static class MatchMapper
         Kills = match.Kills,
         LeaverStatus = match.LeaverStatus,
         LobbyType = match.LobbyType,
-        MatchId = match.MatchId,
+        MatchId = match.MatchId ?? throw new ArgumentNullException(nameof(match), "MatchId cannot be null"),
         PartySize = match.PartySize,
         PlayerSlot = match.PlayerSlot,
         RadiantWin = match.RadiantWin,
