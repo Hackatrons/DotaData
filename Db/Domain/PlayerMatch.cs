@@ -1,8 +1,7 @@
-﻿namespace DotaData.Db.Domain
+﻿namespace DotaData.Db.Domain;
+
+internal class PlayerMatch
 {
-    internal class PlayerMatch
-    {
-        public int PlayerId { get; set; }
-        public long MatchId { get; set; }
-    }
+    public int PlayerId { get; set; }
+    public long MatchId { get; set; }
 }

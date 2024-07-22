@@ -1,6 +1,5 @@
 ﻿create table Match(
-    Id int identity (1,1) not null primary key,
-    MatchId bigint null,
+    MatchId bigint not null,
     PlayerSlot int null,
     RadiantWin bit null,
     GameMode int null,
