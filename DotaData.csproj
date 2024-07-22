@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Db\Scripts\001 - Create match table.sql" />
-    <None Remove="Db\Scripts\002 - Create player match table.sql" />
+    <None Remove="Db\Scripts\001 - Create schemas.sql" />
+    <None Remove="Db\Scripts\002 - Create match tables.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Db\Scripts\002 - Create player match table.sql" />
-    <EmbeddedResource Include="Db\Scripts\001 - Create match table.sql" />
+    <EmbeddedResource Include="Db\Scripts\001 - Create schemas.sql" />
+    <EmbeddedResource Include="Db\Scripts\002 - Create match tables.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -68,31 +68,11 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
 
     static async Task<int> ImportMatches(IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync(
-            """
-            create table #MatchImport(
-                MatchId bigint not null,
-                PlayerSlot int null,
-                RadiantWin bit null,
-                GameMode int null,
-                HeroId int null,
-                StartTime int null,
-                Duration int null,
-                LobbyType int null,
-                Version int null,
-                Kills int null,
-                Deaths int null,
-                Assists int null,
-                AverageRank int null,
-                LeaverStatus int null,
-                PartySize int null,
-                HeroVariant int null
-            )
-            """, transaction: transaction);
+        await connection.ExecuteAsync("truncate table Staging.Match", transaction: transaction);
 
         var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
         {
-            DestinationTableName = "#MatchImport"
+            DestinationTableName = "Staging.Match"
         };
 
         // must specify the column mappings
@@ -105,8 +85,8 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // only insert new items that we don't already know about
         return await connection.ExecuteAsync(
              """
-             merge Match as Target
-             using #MatchImport as Source
+             merge Raw.Match as Target
+             using Staging.Match as Source
              on Source.MatchId = Target.MatchId
              when not matched by Target then
                 insert (
@@ -143,8 +123,6 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
                     Source.LeaverStatus, 
                     Source.PartySize, 
                     Source.HeroVariant);
-
-             drop table #MatchImport
              """,
             param: null,
             transaction: transaction);
@@ -152,17 +130,11 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
 
     static async Task<int> CreatePlayerLinks(int playerId, IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync(
-            """
-            create table #PlayerMatchImport(
-                PlayerId bigint not null,
-                MatchId bigint not null
-            )
-            """, transaction: transaction);
+        await connection.ExecuteAsync("truncate table Staging.PlayerMatch", transaction: transaction);
 
         var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
         {
-            DestinationTableName = "#PlayerMatchImport"
+            DestinationTableName = "Staging.PlayerMatch"
         };
 
         // must specify the column mappings
@@ -175,8 +147,8 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // only insert new items that we don't already know about
         return await connection.ExecuteAsync(
             """
-            merge PlayerMatch as Target
-            using #PlayerMatchImport as Source
+            merge Raw.PlayerMatch as Target
+            using Staging.PlayerMatch as Source
             on Source.PlayerId = Target.PlayerId and Source.MatchId = Target.MatchId
             when not matched by Target then
                insert (
@@ -185,8 +157,6 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
                values (
                    Source.PlayerId, 
                    Source.MatchId);
-            
-            drop table #PlayerMatchImport
             """,
             param: null,
             transaction: transaction);
