@@ -23,7 +23,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
         var results = (await new ApiQuery()
             .Heroes()
             .Significant(false)
-            .Execute<OpenDotaHero>(client, stoppingToken))
+            .ExecuteSet<OpenDotaHero>(client, stoppingToken))
             .Where(HeroFilter.IsValid)
             .Select(HeroMapper.ToDb)
             .ToList();

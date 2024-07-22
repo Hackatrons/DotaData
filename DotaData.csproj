@@ -15,6 +15,7 @@
     <None Remove="Db\Scripts\004 - Create lobby type table.sql" />
     <None Remove="Db\Scripts\005 - Create game mode table.sql" />
     <None Remove="Db\Scripts\006 - Create totals table.sql" />
+    <None Remove="Db\Scripts\007 - Create player table.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Db\Scripts\001 - Create schemas.sql" />
     <EmbeddedResource Include="Db\Scripts\004 - Create lobby type table.sql" />
+    <EmbeddedResource Include="Db\Scripts\007 - Create player table.sql" />
     <EmbeddedResource Include="Db\Scripts\006 - Create totals table.sql" />
     <EmbeddedResource Include="Db\Scripts\005 - Create game mode table.sql" />
     <EmbeddedResource Include="Db\Scripts\003 - Create heroes table.sql" />

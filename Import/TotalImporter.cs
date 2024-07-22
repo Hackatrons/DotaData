@@ -21,7 +21,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
                 .Player(id)
                 .Totals()
                 .Significant(false)
-                .Execute<OpenDotaTotal>(client, stoppingToken)
+                .ExecuteSet<OpenDotaTotal>(client, stoppingToken)
         }));
 
         await using var connection = db.CreateConnection();
@@ -32,9 +32,9 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
             x.PlayerId,
             x.Results,
             DbResults = x.Results
-            .Where(TotalFilter.IsValid)
-            .Select(result => result.ToDb(x.PlayerId))
-            .ToList()
+                .Where(TotalFilter.IsValid)
+                .Select(result => result.ToDb(x.PlayerId))
+                .ToList()
         }).ToList();
 
         var importedPlayerMatchLinks = 0;

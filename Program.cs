@@ -14,9 +14,10 @@ builder.Configuration
 builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("Database"));
 
 builder.Services.AddSingleton<Runner>();
-builder.Services.AddSingleton<MatchImporter>();
-builder.Services.AddSingleton<PlayerTotalImporter>();
 builder.Services.AddSingleton<HeroImporter>();
+builder.Services.AddSingleton<PlayerImporter>();
+builder.Services.AddSingleton<PlayerTotalImporter>();
+builder.Services.AddSingleton<MatchImporter>();
 builder.Services.AddSingleton<DbUpgradeLogger>();
 builder.Services.AddSingleton<Database>();
 builder.Services.AddHttpClient();

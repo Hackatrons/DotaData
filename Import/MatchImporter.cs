@@ -22,7 +22,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
                 .Player(id)
                 .Matches()
                 .Significant(false)
-                .Execute<OpenDotaMatch>(client, stoppingToken)
+                .ExecuteSet<OpenDotaMatch>(client, stoppingToken)
         }));
 
         await using var connection = db.CreateConnection();
@@ -33,9 +33,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
             x.PlayerId,
             x.Results,
             DbResults = x.Results
-            .Where(MatchFilter.IsValid)
-            .Select(MatchMapper.ToDb)
-            .ToList()
+                .Where(MatchFilter.IsValid)
+                .Select(MatchMapper.ToDb)
+                .ToList()
         }).ToList();
 
         // union the set of matches together
