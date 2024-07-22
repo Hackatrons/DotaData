@@ -1,7 +1,7 @@
 ﻿using DotaData.Db.Domain;
 using DotaData.Json;
 
-namespace DotaData.Db.Mapping;
+namespace DotaData.Mapping;
 
 internal static class HeroMapper
 {

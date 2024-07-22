@@ -3,8 +3,8 @@ using DotaData.Cleansing;
 using DotaData.Collections;
 using DotaData.Db;
 using DotaData.Db.Domain;
-using DotaData.Db.Mapping;
 using DotaData.Json;
+using DotaData.Mapping;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
