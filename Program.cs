@@ -1,6 +1,7 @@
 ﻿using DotaData;
 using DotaData.Configuration;
 using DotaData.Db;
+using DotaData.Import;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,7 @@ builder.Configuration
 builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("Database"));
 
 builder.Services.AddSingleton<Runner>();
+builder.Services.AddSingleton<MatchImporter>();
 builder.Services.AddSingleton<DbUpgradeLogger>();
 builder.Services.AddSingleton<Database>();
 builder.Services.AddHttpClient();
