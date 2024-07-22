@@ -1,15 +1,15 @@
 ﻿using DbUp;
 using DotaData.Configuration;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using Npgsql;
 
 namespace DotaData.Db;
 
 internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
 {
-    public NpgsqlConnection CreateConnection()
+    public SqlConnection CreateConnection()
     {
-        var connection = new NpgsqlConnection(settings.Value.ConnectionString);
+        var connection = new SqlConnection(settings.Value.ConnectionString);
         connection.Open();
 
         return connection;
@@ -17,9 +17,9 @@ internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
 
     public void Init()
     {
-        EnsureDatabase.For.PostgresqlDatabase(settings.Value.ConnectionString);
+        EnsureDatabase.For.SqlDatabase(settings.Value.ConnectionString);
 
-        var upgrader = DeployChanges.To.PostgresqlDatabase(settings.Value.ConnectionString)
+        var upgrader = DeployChanges.To.SqlDatabase(settings.Value.ConnectionString)
             .WithScriptsEmbeddedInAssembly(typeof(Database).Assembly)
             .LogTo(logger)
             .Build();
