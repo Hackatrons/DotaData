@@ -5,7 +5,7 @@ namespace DotaData.Cleansing;
 /// <summary>
 /// Determines whether a result is good data or not (and should be discarded).
 /// </summary>
-internal static class TotalFilter
+internal static class PlayerTotalFilter
 {
     public static bool IsValid(OpenDotaTotal total)
     {

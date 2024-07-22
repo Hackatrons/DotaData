@@ -3,7 +3,7 @@ using DotaData.Json;
 
 namespace DotaData.Mapping;
 
-internal static class TotalMapper
+internal static class PlayerTotalMapper
 {
     public static PlayerTotal ToDb(this OpenDotaTotal total, int accountId) => new()
     {

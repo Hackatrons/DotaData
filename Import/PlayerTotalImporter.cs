@@ -32,7 +32,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
             x.AccountId,
             x.Results,
             DbResults = x.Results
-                .Where(TotalFilter.IsValid)
+                .Where(PlayerTotalFilter.IsValid)
                 .Select(result => result.ToDb(x.AccountId))
                 .ToList()
         }).ToList();
