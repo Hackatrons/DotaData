@@ -14,9 +14,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
 {
     public async Task Import(CancellationToken stoppingToken)
     {
-        var queries = await Task.WhenAll(PlayerId.All.Select(async id => new
+        var queries = await Task.WhenAll(AccountId.All.Select(async id => new
         {
-            PlayerId = id,
+            AccountId = id,
             // TODO: maybe run in parallel
             Results = await new ApiQuery()
                 .Player(id)
@@ -30,7 +30,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
 
         var data = queries.Select(x => new
         {
-            x.PlayerId,
+            x.AccountId,
             x.Results,
             DbResults = x.Results
                 .Where(MatchFilter.IsValid)
@@ -50,7 +50,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var set in data)
         {
-            importedPlayerMatchLinks += await CreatePlayerLinks(set.PlayerId, set.DbResults, connection, transaction, stoppingToken);
+            importedPlayerMatchLinks += await CreatePlayerLinks(set.AccountId, set.DbResults, connection, transaction, stoppingToken);
         }
 
         logger.LogInformation("Imported {rows} new player match links.", importedPlayerMatchLinks);
@@ -120,7 +120,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
             transaction: transaction);
     }
 
-    static async Task<int> CreatePlayerLinks(int playerId, IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task<int> CreatePlayerLinks(int accountId, IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
         await connection.ExecuteAsync("truncate table Staging.PlayerMatch", transaction: transaction);
 
@@ -133,7 +133,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // as by default it uses ordinal positions which may differ between the sql table and the c# type
         bulkCopy.LoadColumnMappings<PlayerMatch>();
 
-        var dt = matches.Select(x => new PlayerMatch { PlayerId = playerId, MatchId = x.MatchId}).ToDataTable();
+        var dt = matches.Select(x => new PlayerMatch { AccountId = accountId, MatchId = x.MatchId}).ToDataTable();
         await bulkCopy.WriteToServerAsync(dt, cancellationToken);
 
         // only insert new items that we don't already know about
@@ -141,13 +141,13 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
             """
             merge Raw.PlayerMatch as Target
             using Staging.PlayerMatch as Source
-            on Source.PlayerId = Target.PlayerId and Source.MatchId = Target.MatchId
+            on Source.AccountId = Target.AccountId and Source.MatchId = Target.MatchId
             when not matched by Target then
                insert (
-                   PlayerId,
+                   AccountId,
                    MatchId)
                values (
-                   Source.PlayerId, 
+                   Source.AccountId, 
                    Source.MatchId);
             """,
             param: null,

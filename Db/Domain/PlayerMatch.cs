@@ -2,6 +2,6 @@
 
 internal class PlayerMatch
 {
-    public int PlayerId { get; set; }
+    public int AccountId { get; set; }
     public long MatchId { get; set; }
 }

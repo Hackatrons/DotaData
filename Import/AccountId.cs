@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Import;
 
-internal static class PlayerId
+internal static class AccountId
 {
     public static readonly int[] All = [Hack, Raph];
 

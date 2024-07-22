@@ -13,21 +13,19 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
 {
     public async Task Import(CancellationToken stoppingToken)
     {
-        var data = (await Task.WhenAll(PlayerId.All.Select(async id => new
-        {
-            PlayerId = id,
-            Result = await new ApiQuery()
+        var data = (await Task.WhenAll(AccountId.All.Select(async id =>
+            await new ApiQuery()
                 .Player(id)
                 .Significant(false)
                 .ExecuteSingle<OpenDotaPlayer>(client, stoppingToken)
-        })))
-        .Where(x => PlayerFilter.IsValid(x.Result))
+        )))
+        .Where(PlayerFilter.IsValid)
         .ToList();
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
 
-        var players = data.Select(x => x.Result).Select(x => x.ToDb()).ToList();
+        var players = data.Select(x => x.ToDb()).ToList();
         var imported = await ImportPlayers(players, connection, transaction, stoppingToken);
 
         logger.LogInformation("Imported {rows} players.", imported);

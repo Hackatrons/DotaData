@@ -16,9 +16,9 @@ internal class ApiQuery
     /// <summary>
     /// Specify the player id for the API query.
     /// </summary>
-    public ApiQuery Player(int playerId)
+    public ApiQuery Player(int accountId)
     {
-        _path = $"/api/players/{playerId}";
+        _path = $"/api/players/{accountId}";
         return this;
     }
 

@@ -13,9 +13,9 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
 {
     public async Task Import(CancellationToken stoppingToken)
     {
-        var queries = await Task.WhenAll(PlayerId.All.Select(async id => new
+        var queries = await Task.WhenAll(AccountId.All.Select(async id => new
         {
-            PlayerId = id,
+            AccountId = id,
             // TODO: maybe run in parallel
             Results = await new ApiQuery()
                 .Player(id)
@@ -29,11 +29,11 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
 
         var data = queries.Select(x => new
         {
-            x.PlayerId,
+            x.AccountId,
             x.Results,
             DbResults = x.Results
                 .Where(TotalFilter.IsValid)
-                .Select(result => result.ToDb(x.PlayerId))
+                .Select(result => result.ToDb(x.AccountId))
                 .ToList()
         }).ToList();
 
@@ -68,15 +68,15 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
             """
             merge Raw.PlayerTotal as Target
             using Staging.PlayerTotal as Source
-            on Source.PlayerId = Target.PlayerId and Source.Field = Target.Field
+            on Source.AccountId = Target.AccountId and Source.Field = Target.Field
             when not matched by Target then
                insert (
-                   PlayerId,
+                   AccountId,
                    Field,
                    [Count],
                    [Sum])
                values (
-                   Source.PlayerId, 
+                   Source.AccountId, 
                    Source.Field,
                    Source.[Count],
                    Source.[Sum])

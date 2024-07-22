@@ -20,9 +20,9 @@ create table Raw.Match(
 )
 
 create table Raw.PlayerMatch(
-    PlayerId int not null,
+    AccountId int not null,
     MatchId bigint not null,
-    constraint PK_PlayerMatch primary key (PlayerId, MatchId)
+    constraint PK_PlayerMatch primary key (AccountId, MatchId)
 )
 
 -- staging tables
@@ -47,7 +47,7 @@ create table Staging.Match(
 )
 
 create table Staging.PlayerMatch(
-    PlayerId int not null,
+    AccountId int not null,
     MatchId bigint not null,
-    constraint PK_PlayerMatch primary key (PlayerId, MatchId)
+    constraint PK_PlayerMatch primary key (AccountId, MatchId)
 )
