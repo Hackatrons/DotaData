@@ -12,7 +12,7 @@ namespace DotaData.Import;
 /// <summary>
 /// Imports hero information to the database.
 /// </summary>
-internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Database db)
+internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client, Database db)
 {
     public async Task Import(CancellationToken cancellationToken)
     {

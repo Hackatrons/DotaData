@@ -13,7 +13,7 @@ namespace DotaData.Import;
 /// <summary>
 /// Imports match information to the database.
 /// </summary>
-internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, Database db)
+internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient client, Database db)
 {
     // get 5 matches at a time
     const int ChunkSize = 5;
@@ -43,9 +43,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
 
         foreach (var chunk in chunks)
         {
-            var apiResults = await Task.WhenAll(chunk.Select(async id => (await new ApiQuery()
+            var apiResults = await Task.WhenAll(chunk.Select(async id => await new ApiQuery()
                 .Match(id)
-                .ExecuteSet<OpenDotaMatch>(client, cancellationToken))));
+                .ExecuteSet<OpenDotaMatch>(client, cancellationToken)));
 
             // TODO: set a flag in db to exclude this match next time if it's a 404
             var errors = apiResults

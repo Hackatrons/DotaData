@@ -13,11 +13,11 @@ internal static class ApiQueryExecutor
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
     };
 
-    public static async Task<ValueOrError<IEnumerable<T>>> ExecuteSet<T>(this ApiQuery query, HttpClient client, CancellationToken cancellationToken = new())
+    public static async Task<ValueOrError<IEnumerable<T>>> ExecuteSet<T>(this ApiQuery query, OpenDotaClient client, CancellationToken cancellationToken = new())
     {
         var url = query.ToString();
 
-        using var response = await client.GetAsync(url, cancellationToken);
+        using var response = await client.HttpClient.GetAsync(url, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
             return new InvalidOperationException($"{response.StatusCode} response from server");
@@ -40,7 +40,7 @@ internal static class ApiQueryExecutor
         return single is null ? new InvalidOperationException($"Unable to deserialize to type{typeof(T).FullName}") : new ValueOrError<IEnumerable<T>>([single]);
     }
 
-    public static async Task<ValueOrError<T>> ExecuteSingle<T>(this ApiQuery query, HttpClient client, CancellationToken cancellationToken = new())
+    public static async Task<ValueOrError<T>> ExecuteSingle<T>(this ApiQuery query, OpenDotaClient client, CancellationToken cancellationToken = new())
     {
         var results = await query.ExecuteSet<T>(client, cancellationToken);
 

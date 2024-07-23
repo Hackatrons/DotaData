@@ -12,7 +12,7 @@ namespace DotaData.Import;
 /// <summary>
 /// Imports match information to the database.
 /// </summary>
-internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, HttpClient client, Database db)
+internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, OpenDotaClient client, Database db)
 {
     public async Task Import(CancellationToken cancellationToken)
     {

@@ -12,7 +12,7 @@ namespace DotaData.Import;
 /// <summary>
 /// Imports player performance metrics to the database.
 /// </summary>
-internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClient client, Database db)
+internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, OpenDotaClient client, Database db)
 {
     public async Task Import(CancellationToken stoppingToken)
     {
