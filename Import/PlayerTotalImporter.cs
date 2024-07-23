@@ -44,7 +44,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
             importedPlayerMatchLinks += await ImportPlayerTotals(set.DbResults, connection, transaction, stoppingToken);
         }
 
-        logger.LogInformation("Imported {rows} player totals.", importedPlayerMatchLinks);
+        logger.LogInformation("Imported {rows} new player totals.", importedPlayerMatchLinks);
 
         await transaction.CommitAsync(stoppingToken);
     }
@@ -80,8 +80,8 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
                    Source.Field,
                    Source.[Count],
                    Source.[Sum])
-            when matched then
-                update set [Count] = Source.[Count], [Sum] = Source.[Sum];
+            when matched and (Target.Count != Source.Count or Target.Sum != Source.Sum) then
+                update set [Count] = Source.Count, [Sum] = Source.Sum;
             """,
             param: null,
             transaction: transaction);
