@@ -26,9 +26,11 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         // grab a list of matches to import
         // prefer the most recent
         var ids = (await connection.QueryAsync<dynamic>(
-           """
-           select distinct MatchId, StartTime
-           from dbo.PlayerMatch
+           $"""
+           select distinct top {Limit} PM.MatchId, PM.StartTime
+           from dbo.PlayerMatch PM
+           left join dbo.Match M on M.MatchId = PM.MatchId
+           where M.MatchId is null
            order by StartTime desc
            """)).ToList();
 
@@ -37,8 +39,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
         // TODO: restrict work within the 2,000 daily rate limit
         // for now just grab 100
-        var partition = ids.Select(x => (long)x.MatchId).Take(Limit).ToList();
-        var chunks = partition.Chunk(ChunkSize);
+        var chunks = ids.Select(x => (long)x.MatchId).Chunk(ChunkSize);
         var imported = 0;
 
         foreach (var chunk in chunks)
