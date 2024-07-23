@@ -31,7 +31,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
             .ToList();
 
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(results, "dbo.Hero", transaction, cancellationToken);
+        await connection.BulkLoad(results, "dbo.Hero", transaction, cancellationToken, true);
         await transaction.CommitAsync(cancellationToken);
 
         logger.LogInformation("Imported {count} heroes.", results.Count);

@@ -11,9 +11,13 @@ internal static class DataTableExtensions
     /// Copies the set of values to a database table.
     /// Truncates the existing data before copying.
     /// </summary>
-    public static async Task BulkLoad<T>(this SqlConnection connection, IEnumerable<T> values, string tableName, SqlTransaction transaction, CancellationToken cancellationToken = new())
+    public static async Task BulkLoad<T>(this SqlConnection connection, IEnumerable<T> values, string tableName, SqlTransaction transaction, CancellationToken cancellationToken = new(), bool deleteInsteadOfTruncate = false)
     {
-        await connection.ExecuteAsync($"truncate table {tableName}", transaction: transaction);
+        if (deleteInsteadOfTruncate)
+            // can't truncate tables with FKs
+            await connection.ExecuteAsync($"delete from {tableName}", transaction: transaction);
+        else
+            await connection.ExecuteAsync($"truncate table {tableName}", transaction: transaction);
 
         var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
         {

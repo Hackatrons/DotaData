@@ -1,5 +1,5 @@
 ﻿create table dbo.PlayerMatch(
-    AccountId bigint not null,
+    AccountId int not null,
     MatchId bigint not null,
     PlayerSlot int null,
     RadiantWin bit null,
@@ -19,8 +19,20 @@
     constraint PK_Match primary key (AccountId,MatchId)
 )
 
+alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_GameMode] foreign key ([GameMode]) references [dbo].[GameMode] ([Id])
+go
+
+alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_Hero] foreign key ([HeroId]) references [dbo].[Hero] ([Id])
+go
+
+alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_LobbyType] foreign key ([LobbyType]) references  [dbo].[LobbyType] ([Id])
+go
+
+alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_Player] foreign key ([AccountId]) references [dbo].[Player] ([AccountId])
+go
+
 create table Staging.PlayerMatch(
-    AccountId bigint not null,
+    AccountId int not null,
     MatchId bigint not null,
     PlayerSlot int null,
     RadiantWin bit null,

@@ -12,9 +12,11 @@ internal class Runner(IHost host, ILogger<Runner> logger, Database db, PlayerMat
         logger.LogInformation("Initialising database");
         db.Init();
 
+        // import order is important as we have key constraints to meet
+        await heroImporter.Import(stoppingToken);
+        await playerImporter.Import(stoppingToken);
+
         await Task.WhenAll([
-            heroImporter.Import(stoppingToken),
-            playerImporter.Import(stoppingToken),
             playerTotalImporter.Import(stoppingToken),
             matchImporter.Import(stoppingToken)
          ]);
