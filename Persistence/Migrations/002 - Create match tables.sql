@@ -1,5 +1,6 @@
 ﻿-- import tables
-create table Raw.Match(
+create table Raw.PlayerMatch(
+    AccountId bigint not null,
     MatchId bigint not null,
     PlayerSlot int null,
     RadiantWin bit null,
@@ -16,17 +17,12 @@ create table Raw.Match(
     LeaverStatus int null,
     PartySize int null,
     HeroVariant int null,
-    constraint PK_Match primary key (MatchId)
-)
-
-create table Raw.PlayerMatch(
-    AccountId int not null,
-    MatchId bigint not null,
-    constraint PK_PlayerMatch primary key (AccountId, MatchId)
+    constraint PK_Match primary key (AccountId,MatchId)
 )
 
 -- staging tables
-create table Staging.Match(
+create table Staging.PlayerMatch(
+    AccountId bigint not null,
     MatchId bigint not null,
     PlayerSlot int null,
     RadiantWin bit null,
@@ -43,11 +39,5 @@ create table Staging.Match(
     LeaverStatus int null,
     PartySize int null,
     HeroVariant int null,
-    constraint PK_Match primary key (MatchId)
-)
-
-create table Staging.PlayerMatch(
-    AccountId int not null,
-    MatchId bigint not null,
-    constraint PK_PlayerMatch primary key (AccountId, MatchId)
+    constraint PK_Match primary key (AccountId,MatchId)
 )

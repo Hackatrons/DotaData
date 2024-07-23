@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DotaData;
 
-internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImporter matchImporter, HeroImporter heroImporter, PlayerImporter playerImporter, PlayerTotalImporter playerTotalImporter) : BackgroundService
+internal class Runner(IHost host, ILogger<Runner> logger, Database db, PlayerMatchImporter matchImporter, HeroImporter heroImporter, PlayerImporter playerImporter, PlayerTotalImporter playerTotalImporter) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

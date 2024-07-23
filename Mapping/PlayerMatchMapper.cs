@@ -6,10 +6,11 @@ namespace DotaData.Mapping;
 /// <summary>
 /// Maps API objects to the database equivalent.
 /// </summary>
-internal static class MatchMapper
+internal static class PlayerMatchMapper
 {
-    public static Match ToDb(this OpenDotaMatch match) => new()
+    public static PlayerMatch ToDb(this OpenDotaPlayerMatch match, int accountId) => new()
     {
+        AccountId = accountId,
         Assists = match.Assists,
         AverageRank = match.AverageRank,
         Deaths = match.Deaths,
