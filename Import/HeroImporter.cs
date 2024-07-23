@@ -19,7 +19,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
     {
         await using var connection = db.CreateConnection();
 
-        var populated = await connection.ExecuteAsync("select count(*) from Raw.Hero", stoppingToken);
+        var populated = await connection.ExecuteScalarAsync<int>("select count(*) from Raw.Hero", stoppingToken);
 
         if (populated > 0)
             return;
