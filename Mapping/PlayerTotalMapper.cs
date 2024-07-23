@@ -3,6 +3,9 @@ using DotaData.Json;
 
 namespace DotaData.Mapping;
 
+/// <summary>
+/// Maps API objects to the database equivalent.
+/// </summary>
 internal static class PlayerTotalMapper
 {
     public static PlayerTotal ToDb(this OpenDotaTotal total, int accountId) => new()

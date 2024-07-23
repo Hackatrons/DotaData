@@ -7,6 +7,9 @@ namespace DotaData.Db;
 
 internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
 {
+    /// <summary>
+    /// Returns an open connection to the database.
+    /// </summary>
     public SqlConnection CreateConnection()
     {
         var connection = new SqlConnection(settings.Value.ConnectionString);
@@ -15,6 +18,9 @@ internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
         return connection;
     }
 
+    /// <summary>
+    /// Creates the database and applies any pending migration scripts.
+    /// </summary>
     public void Init()
     {
         EnsureDatabase.For.SqlDatabase(settings.Value.ConnectionString);

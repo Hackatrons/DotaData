@@ -1,5 +1,8 @@
 ﻿namespace DotaData.Json;
 
+/// <summary>
+/// Represents a json object from the Open Dota API.
+/// </summary>
 internal class OpenDotaHero
 {
     public long? Id { get; set; }

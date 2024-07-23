@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
 
+/// <summary>
+/// Imports player performance metrics to the database.
+/// </summary>
 internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClient client, Database db)
 {
     public async Task Import(CancellationToken stoppingToken)

@@ -7,6 +7,10 @@ namespace DotaData.Db;
 
 internal static class DataTableExtensions
 {
+    /// <summary>
+    /// Copies the set of values to a database table.
+    /// Truncates the existing data before copying.
+    /// </summary>
     public static async Task BulkLoad<T>(this SqlConnection connection, IEnumerable<T> values, string tableName, SqlTransaction transaction, CancellationToken cancellationToken = new())
     {
         await connection.ExecuteAsync($"truncate table {tableName}", transaction: transaction);

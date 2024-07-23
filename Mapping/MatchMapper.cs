@@ -3,6 +3,9 @@ using DotaData.Json;
 
 namespace DotaData.Mapping;
 
+/// <summary>
+/// Maps API objects to the database equivalent.
+/// </summary>
 internal static class MatchMapper
 {
     public static Match ToDb(this OpenDotaMatch match) => new()

@@ -10,6 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
 
+/// <summary>
+/// Imports match information to the database.
+/// </summary>
 internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, Database db)
 {
     public async Task Import(CancellationToken stoppingToken)
