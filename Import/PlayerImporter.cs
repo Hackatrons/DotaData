@@ -42,7 +42,7 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
         // TODO: update existing when matched
         var affected = await connection.ExecuteAsync(
             """
-            merge Raw.Player as Target
+            merge dbo.Player as Target
             using Staging.Player as Source
             on Source.AccountId = Target.AccountId
             when not matched by Target then

@@ -1,6 +1,2 @@
-﻿create schema [Raw]
-go
-create schema Staging
-go
-create schema Reporting
+﻿create schema Staging
 go

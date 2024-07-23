@@ -1,4 +1,4 @@
-﻿create table Raw.Hero(
+﻿create table dbo.Hero(
     Id int not null,
     Name nvarchar(255) not null,
     LocalizedName nvarchar(255) not null,

@@ -39,7 +39,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(
             """
-            merge Raw.PlayerTotal as Target
+            merge dbo.PlayerTotal as Target
             using Staging.PlayerTotal as Source
             on Source.AccountId = Target.AccountId and Source.Field = Target.Field
             when not matched by Target then

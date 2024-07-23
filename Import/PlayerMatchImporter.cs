@@ -37,7 +37,7 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, HttpClie
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(
              """
-             merge Raw.PlayerMatch as Target
+             merge dbo.PlayerMatch as Target
              using Staging.PlayerMatch as Source
              on Source.MatchId = Target.MatchId
              when not matched by Target then

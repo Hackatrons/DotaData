@@ -1,5 +1,4 @@
-﻿-- import tables
-create table Raw.Player(
+﻿create table dbo.Player(
     AccountId int not null,
     PersonaName nvarchar(255) null,
     Name nvarchar(255) null,
@@ -24,7 +23,6 @@ create table Raw.Player(
 )
 go
 
--- staging tables
 create table Staging.Player(
     AccountId int not null,
     PersonaName nvarchar(255) null,

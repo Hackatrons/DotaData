@@ -1,5 +1,4 @@
-﻿-- import tables
-create table Raw.PlayerTotal(
+﻿create table dbo.PlayerTotal(
     AccountId int not null,
     Field nvarchar(255) not null,
     [Count] int not null,
@@ -8,7 +7,6 @@ create table Raw.PlayerTotal(
 )
 go
 
--- staging tables
 create table Staging.PlayerTotal(
     AccountId int not null,
     Field nvarchar(255) not null,

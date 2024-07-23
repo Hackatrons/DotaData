@@ -1,5 +1,4 @@
-﻿-- import tables
-create table Raw.PlayerMatch(
+﻿create table dbo.PlayerMatch(
     AccountId bigint not null,
     MatchId bigint not null,
     PlayerSlot int null,
@@ -20,7 +19,6 @@ create table Raw.PlayerMatch(
     constraint PK_Match primary key (AccountId,MatchId)
 )
 
--- staging tables
 create table Staging.PlayerMatch(
     AccountId bigint not null,
     MatchId bigint not null,
