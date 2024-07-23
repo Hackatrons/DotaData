@@ -12,10 +12,12 @@ internal class Runner(IHost host, ILogger<Runner> logger, Database db, MatchImpo
         logger.LogInformation("Initialising database");
         db.Init();
 
-        await heroImporter.Import(stoppingToken);
-        await playerImporter.Import(stoppingToken);
-        await playerTotalImporter.Import(stoppingToken);
-        await matchImporter.Import(stoppingToken);
+        await Task.WhenAll([
+            heroImporter.Import(stoppingToken),
+            playerImporter.Import(stoppingToken),
+            playerTotalImporter.Import(stoppingToken),
+            matchImporter.Import(stoppingToken)
+         ]);
 
         await host.StopAsync(stoppingToken);
     }
