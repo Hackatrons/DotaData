@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing;
+using DotaData.Logging;
 using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -21,18 +22,27 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, HttpClie
 
     async Task<int> Import(int accountId, CancellationToken cancellationToken)
     {
-        var results = (await new ApiQuery()
+        var apiResults = await new ApiQuery()
             .Player(accountId)
             .Matches()
             .Significant(false)
-            .ExecuteSet<OpenDotaPlayerMatch>(client, cancellationToken))
+            .ExecuteSet<OpenDotaPlayerMatch>(client, cancellationToken);
+
+        if (apiResults.IsError)
+        {
+            logger.LogApiError(apiResults.GetError());
+            return 0;
+        }
+
+        var dbResults = apiResults
+            .GetValue()
             .Where(PlayerMatchFilter.IsValid)
             .Select(x => x.ToDb(accountId))
             .ToList();
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(results, "Staging.PlayerMatch", transaction, cancellationToken);
+        await connection.BulkLoad(dbResults, "Staging.PlayerMatch", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(

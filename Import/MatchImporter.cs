@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing;
+using DotaData.Logging;
 using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -39,19 +40,35 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         var partition = ids.Select(x => (long)x.MatchId).Take(Limit).ToList();
         var chunks = partition.Chunk(ChunkSize);
         var imported = 0;
-        
-        foreach (var chunk in chunks) {
-            var results = await Task.WhenAll(chunk.Select(async id => (await new ApiQuery()
-                    .Match(id)
-                    .ExecuteSet<OpenDotaMatch>(client, cancellationToken))
+
+        foreach (var chunk in chunks)
+        {
+            var apiResults = await Task.WhenAll(chunk.Select(async id => (await new ApiQuery()
+                .Match(id)
+                .ExecuteSet<OpenDotaMatch>(client, cancellationToken))));
+
+            // TODO: set a flag in db to exclude this match next time if it's a 404
+            var errors = apiResults
+                .Where(x => x.IsError)
+                .ToList();
+
+            foreach (var error in errors)
+            {
+                logger.LogApiError(error.GetError());
+            }
+
+            var results = apiResults
+                .Where(x => x.IsSuccess)
+                .Select(x => x.GetValue())
+                .SelectMany(x => x)
                 .Where(MatchFilter.IsValid)
                 .Select(x => x.ToDb())
-                .ToList()));
+                .ToList();
 
-            if (!results.Any(x => x.Any()))
+            if (!results.Any())
                 continue;
 
-            var saved = await Import(results.SelectMany(x => x), cancellationToken);
+            var saved = await Import(results, cancellationToken);
             imported += saved;
         }
 

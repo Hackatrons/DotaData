@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing;
+using DotaData.Logging;
 using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -22,18 +23,27 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
         if (populated > 0)
             return;
 
-        var results = (await new ApiQuery()
+        var apiResults = await new ApiQuery()
             .Heroes()
             .Significant(false)
-            .ExecuteSet<OpenDotaHero>(client, cancellationToken))
+            .ExecuteSet<OpenDotaHero>(client, cancellationToken);
+
+        if (!apiResults.IsSuccess)
+        {
+            logger.LogApiError(apiResults.GetError());
+            return;
+        }
+
+        var dbResults = apiResults
+            .GetValue()
             .Where(HeroFilter.IsValid)
             .Select(HeroMapper.ToDb)
             .ToList();
 
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(results, "dbo.Hero", transaction, cancellationToken, true);
+        await connection.BulkLoad(dbResults, "dbo.Hero", transaction, cancellationToken, true);
         await transaction.CommitAsync(cancellationToken);
 
-        logger.LogInformation("Imported {count} heroes.", results.Count);
+        logger.LogInformation("Imported {count} heroes.", dbResults.Count);
     }
 }

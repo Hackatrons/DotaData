@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing;
+using DotaData.Logging;
 using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -27,13 +28,19 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
                     .Significant(false)
                     .ExecuteSingle<OpenDotaPlayer>(client, cancellationToken);
 
-        if (!PlayerFilter.IsValid(apiResult))
+        if (apiResult.IsError)
+        {
+            logger.LogApiError(apiResult.GetError());
+            return 0;
+        }
+
+        if (!PlayerFilter.IsValid(apiResult.GetValue()))
         {
             logger.LogError("Invalid {type} data for {account}", nameof(OpenDotaPlayer), accountId);
             return 0;
         }
 
-        var dbResult = apiResult.ToDb();
+        var dbResult = apiResult.GetValue().ToDb();
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
