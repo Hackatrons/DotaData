@@ -25,7 +25,7 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
 
-        var players = data.Select(x => x.ToDb()).ToList();
+        var players = data.Select(x => x.ToDb());
         var imported = await ImportPlayers(players, connection, transaction, stoppingToken);
 
         logger.LogInformation("Imported {rows} players.", imported);
@@ -33,19 +33,9 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
         await transaction.CommitAsync(stoppingToken);
     }
 
-    static async Task<int> ImportPlayers(IList<Player> players, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task<int> ImportPlayers(IEnumerable<Player> players, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync("truncate table Staging.Player", transaction: transaction);
-
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
-        {
-            DestinationTableName = "Staging.Player"
-        };
-
-        bulkCopy.LoadColumnMappings<Player>();
-
-        var dt = players.ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+        await connection.BulkLoad(players, "Staging.Player", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         // TODO: update existing when matched

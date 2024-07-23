@@ -49,19 +49,9 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
         await transaction.CommitAsync(stoppingToken);
     }
 
-    static async Task<int> ImportPlayerTotals(IList<PlayerTotal> totals, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task<int> ImportPlayerTotals(IEnumerable<PlayerTotal> totals, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync("truncate table Staging.PlayerTotal", transaction: transaction);
-
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
-        {
-            DestinationTableName = "Staging.PlayerTotal"
-        };
-
-        bulkCopy.LoadColumnMappings<PlayerTotal>();
-
-        var dt = totals.ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+        await connection.BulkLoad(totals, "Staging.PlayerTotal", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         return await connection.ExecuteAsync(

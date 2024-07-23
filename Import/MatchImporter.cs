@@ -39,9 +39,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         }).ToList();
 
         // union the set of matches together
-        var allMatches = data
-            .SelectMany(x => x.DbResults).ToHashSet(new LambdaEqualityComparer<Match>((x, y) => x?.MatchId == y?.MatchId, x => x.MatchId.GetHashCode()))
-            .ToList();
+        var allMatches = data.SelectMany(x => x.DbResults).ToHashSet(new LambdaEqualityComparer<Match>((x, y) => x?.MatchId == y?.MatchId, x => x.MatchId.GetHashCode()));
 
         var importedMatches = await ImportMatches(allMatches, connection, transaction, stoppingToken);
         logger.LogInformation("Imported {rows} new matches.", importedMatches);
@@ -50,7 +48,8 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var set in data)
         {
-            importedPlayerMatchLinks += await CreatePlayerLinks(set.AccountId, set.DbResults, connection, transaction, stoppingToken);
+            var links = set.DbResults.Select(x => new PlayerMatch { AccountId = set.AccountId, MatchId = x.MatchId });
+            importedPlayerMatchLinks += await CreatePlayerLinks(links, connection, transaction, stoppingToken);
         }
 
         logger.LogInformation("Imported {rows} new player match links.", importedPlayerMatchLinks);
@@ -58,21 +57,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
         await transaction.CommitAsync(stoppingToken);
     }
 
-    static async Task<int> ImportMatches(IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task<int> ImportMatches(IEnumerable<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync("truncate table Staging.Match", transaction: transaction);
-
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
-        {
-            DestinationTableName = "Staging.Match"
-        };
-
-        // must specify the column mappings
-        // as by default it uses ordinal positions which may differ between the sql table and the c# type
-        bulkCopy.LoadColumnMappings<Match>();
-
-        var dt = matches.ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+        await connection.BulkLoad(matches, "Staging.Match", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         return await connection.ExecuteAsync(
@@ -120,21 +107,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, HttpClient client, D
             transaction: transaction);
     }
 
-    static async Task<int> CreatePlayerLinks(int accountId, IList<Match> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task<int> CreatePlayerLinks(IEnumerable<PlayerMatch> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync("truncate table Staging.PlayerMatch", transaction: transaction);
-
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
-        {
-            DestinationTableName = "Staging.PlayerMatch"
-        };
-
-        // must specify the column mappings
-        // as by default it uses ordinal positions which may differ between the sql table and the c# type
-        bulkCopy.LoadColumnMappings<PlayerMatch>();
-
-        var dt = matches.Select(x => new PlayerMatch { AccountId = accountId, MatchId = x.MatchId}).ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+        await connection.BulkLoad(matches, "Staging.PlayerMatch", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         return await connection.ExecuteAsync(

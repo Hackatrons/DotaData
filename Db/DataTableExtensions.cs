@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Reflection;
 
@@ -6,7 +7,24 @@ namespace DotaData.Db;
 
 internal static class DataTableExtensions
 {
-    public static DataTable ToDataTable<T>(this IEnumerable<T> items)
+    public static async Task BulkLoad<T>(this SqlConnection connection, IEnumerable<T> values, string tableName, SqlTransaction transaction, CancellationToken cancellationToken = new())
+    {
+        await connection.ExecuteAsync($"truncate table {tableName}", transaction: transaction);
+
+        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
+        {
+            DestinationTableName = tableName
+        };
+
+        // must specify the column mappings
+        // as by default it uses ordinal positions which may differ between the sql table and the c# type
+        bulkCopy.LoadColumnMappings<T>();
+
+        var dt = values.ToDataTable();
+        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+    }
+
+    static DataTable ToDataTable<T>(this IEnumerable<T> items)
     {
         var dt = new DataTable(typeof(T).Name);
         var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -27,7 +45,7 @@ internal static class DataTableExtensions
         return dt;
     }
 
-    public static void LoadColumnMappings<T>(this SqlBulkCopy copy)
+    static void LoadColumnMappings<T>(this SqlBulkCopy copy)
     {
         var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 

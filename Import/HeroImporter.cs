@@ -25,8 +25,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
             .Significant(false)
             .ExecuteSet<OpenDotaHero>(client, stoppingToken))
             .Where(HeroFilter.IsValid)
-            .Select(HeroMapper.ToDb)
-            .ToList();
+            .Select(HeroMapper.ToDb);
 
         await using var transaction = connection.BeginTransaction();
 
@@ -36,18 +35,8 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
         await transaction.CommitAsync(stoppingToken);
     }
 
-    static async Task ImportHeroes(IList<Hero> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
+    static async Task ImportHeroes(IEnumerable<Hero> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
     {
-        await connection.ExecuteAsync("truncate table Raw.Hero", transaction: transaction);
-
-        var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.TableLock, transaction)
-        {
-            DestinationTableName = "Raw.Hero"
-        };
-
-        bulkCopy.LoadColumnMappings<Hero>();
-
-        var dt = matches.ToDataTable();
-        await bulkCopy.WriteToServerAsync(dt, cancellationToken);
+        await connection.BulkLoad(matches, "Raw.Hero", transaction, cancellationToken);
     }
 }
