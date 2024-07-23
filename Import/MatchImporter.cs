@@ -23,12 +23,14 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
         // grab a list of matches to import
         // prefer the most recent
+        // exclude those we've already tried
         var toQuery = (await connection.QueryAsync<dynamic>(
            $"""
            select distinct top {Limit} PM.MatchId, PM.StartTime
            from dbo.PlayerMatch PM
            left join dbo.Match M on M.MatchId = PM.MatchId
-           where M.MatchId is null
+           left join dbo.MatchImport MI on MI.MatchId = PM.MatchId
+           where M.MatchId is null and MI.MatchId is null
            order by StartTime desc
            """)).ToList();
 
@@ -49,9 +51,21 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
             if (apiResults.IsError)
             {
-                // TODO: set a flag in db to exclude this match next time if it's a 404
-                logger.LogApiError(apiResults.GetError());
-                return;
+                var error = apiResults.GetError();
+                logger.LogApiError(error);
+
+                await connection.ExecuteAsync(
+                    """
+                        insert into dbo.MatchImport (MatchId, Success, ErrorCode, ErrorMessage)
+                        values (@MatchId, @Success, @ErrorCode, @ErrorMessage)
+                    """, param: new {
+                        MatchId = id,
+                        Success = false,
+                        ErrorCode = (int?)(error as HttpRequestException)?.StatusCode,
+                        ErrorMessage = error.Message,
+                    });
+
+                continue;
             }
 
             var results = apiResults.GetValue()

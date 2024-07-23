@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace DotaData.Persistence.Domain
+﻿namespace DotaData.Persistence.Domain
 {
     internal class Match
     {

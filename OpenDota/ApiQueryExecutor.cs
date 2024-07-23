@@ -20,7 +20,7 @@ internal static class ApiQueryExecutor
         using var response = await client.HttpClient.GetAsync(url, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
-            return new InvalidOperationException($"{response.StatusCode} response from server");
+            return new HttpRequestException(response.ReasonPhrase ?? $"{response.StatusCode} response from server", inner: null, statusCode: response.StatusCode);
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
