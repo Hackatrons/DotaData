@@ -1,0 +1,53 @@
+﻿create table dbo.Match(
+    MatchId bigint not null,
+	RadiantWin bit null,
+	Duration int null,
+	PreGameDuration int null,
+	StartTime int null,
+	MatchSeqNum bigint null,
+	TowerStatusRadiant int null,
+	TowerStatusDire int null,
+	BarracksStatusRadiant int null,
+	BarracksStatusDire int null,
+	Cluster int null,
+	FirstBloodTime int null,
+	LobbyType int null,
+	HumanPlayers int null,
+	LeagueId int null,
+	GameMode int null,
+	Flags int null,
+	Engine int null,
+	RadiantScore int null,
+	DireScore int null,
+	Patch int null,
+	Region int null,
+    constraint PK_Match primary key (MatchId)
+)
+go
+
+create table Staging.Match(
+    MatchId bigint not null,
+	RadiantWin bit null,
+	Duration int null,
+	PreGameDuration int null,
+	StartTime int null,
+	MatchSeqNum bigint null,
+	TowerStatusRadiant int null,
+	TowerStatusDire int null,
+	BarracksStatusRadiant int null,
+	BarracksStatusDire int null,
+	Cluster int null,
+	FirstBloodTime int null,
+	LobbyType int null,
+	HumanPlayers int null,
+	LeagueId int null,
+	GameMode int null,
+	Flags int null,
+	Engine int null,
+	RadiantScore int null,
+	DireScore int null,
+	Patch int null,
+	Region int null,
+    constraint PK_Staging_Match primary key (MatchId)
+)
+go

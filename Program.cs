@@ -21,6 +21,7 @@ builder.Services.AddSingleton<HeroImporter>();
 builder.Services.AddSingleton<PlayerImporter>();
 builder.Services.AddSingleton<PlayerTotalImporter>();
 builder.Services.AddSingleton<PlayerMatchImporter>();
+builder.Services.AddSingleton<MatchImporter>();
 builder.Services.AddSingleton<DbUpgradeLogger>();
 builder.Services.AddSingleton<Database>();
 builder.Services.AddHttpClient();

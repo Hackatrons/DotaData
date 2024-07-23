@@ -16,7 +16,13 @@ internal static class ApiQueryExecutor
     {
         var url = query.ToString();
 
-        await using var stream = await client.GetStreamAsync(url, cancellationToken);
+        using var response = await client.GetAsync(url, cancellationToken);
+
+        // TODO: log
+        if (!response.IsSuccessStatusCode)
+            return [];
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
 
         if (json.RootElement.ValueKind == JsonValueKind.Array)

@@ -23,11 +23,21 @@ internal class ApiQuery
     }
 
     /// <summary>
-    /// Specifies matches should be retrieved.
+    /// Specifies matches should be retrieved (used in conjuction with player queries).
     /// </summary>
     public ApiQuery Matches()
     {
         _subPath = "matches";
+        return this;
+    }
+
+    /// <summary>
+    /// Specifies a specific match should be retrieved.
+    /// </summary>
+    public ApiQuery Match(long matchId)
+    {
+        // matches by themselves
+        _path = $"/api/matches/{matchId}";
         return this;
     }
 

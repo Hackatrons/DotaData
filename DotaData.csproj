@@ -16,6 +16,7 @@
     <None Remove="Persistence\Migrations\005 - Create player table.sql" />
     <None Remove="Persistence\Migrations\006 - Create player match tables.sql" />
     <None Remove="Persistence\Migrations\007 - Create totals table.sql" />
+    <None Remove="Persistence\Migrations\008 - Create match table.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
     <EmbeddedResource Include="Persistence\Migrations\001 - Create schemas.sql" />
     <EmbeddedResource Include="Persistence\Migrations\003 - Create lobby type table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\005 - Create player table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\008 - Create match table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\007 - Create totals table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\004 - Create game mode table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\002 - Create heroes table.sql" />

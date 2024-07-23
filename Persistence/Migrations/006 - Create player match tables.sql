@@ -16,7 +16,7 @@
     LeaverStatus int null,
     PartySize int null,
     HeroVariant int null,
-    constraint PK_Match primary key (AccountId,MatchId)
+    constraint PK_PlayerMatch primary key (AccountId,MatchId)
 )
 
 alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_GameMode] foreign key ([GameMode]) references [dbo].[GameMode] ([Id])

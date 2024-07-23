@@ -3,7 +3,7 @@
 internal class PlayerMatch
 {
     public long MatchId { get; set; }
-    public long AccountId { get; set; }
+    public int AccountId { get; set; }
     public int? PlayerSlot { get; set; }
     public bool? RadiantWin { get; set; }
     public int? GameMode { get; set; }
