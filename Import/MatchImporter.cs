@@ -15,8 +15,6 @@ namespace DotaData.Import;
 /// </summary>
 internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient client, Database db)
 {
-    // get 5 matches at a time
-    const int ChunkSize = 5;
     const int Limit = 100;
 
     public async Task Import(CancellationToken cancellationToken)
@@ -25,7 +23,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
         // grab a list of matches to import
         // prefer the most recent
-        var ids = (await connection.QueryAsync<dynamic>(
+        var toQuery = (await connection.QueryAsync<dynamic>(
            $"""
            select distinct top {Limit} PM.MatchId, PM.StartTime
            from dbo.PlayerMatch PM
@@ -34,40 +32,35 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
            order by StartTime desc
            """)).ToList();
 
-        if (!ids.Any())
+        if (!toQuery.Any())
             return;
 
         // TODO: restrict work within the 2,000 daily rate limit
-        // for now just grab 100
-        var chunks = ids.Select(x => (long)x.MatchId).Chunk(ChunkSize);
+        var ids = toQuery.Select(x => (long)x.MatchId).ToList();
         var imported = 0;
 
-        foreach (var chunk in chunks)
+        // I've tried running this in parallel but the server is very quick to send 429's back
+        // seems safer to just run 1 at a time
+        foreach (var id in ids)
         {
-            var apiResults = await Task.WhenAll(chunk.Select(async id => await new ApiQuery()
+            var apiResults = await new ApiQuery()
                 .Match(id)
-                .ExecuteSet<OpenDotaMatch>(client, cancellationToken)));
+                .ExecuteSet<OpenDotaMatch>(client, cancellationToken);
 
-            // TODO: set a flag in db to exclude this match next time if it's a 404
-            var errors = apiResults
-                .Where(x => x.IsError)
-                .ToList();
-
-            foreach (var error in errors)
+            if (apiResults.IsError)
             {
-                logger.LogApiError(error.GetError());
+                // TODO: set a flag in db to exclude this match next time if it's a 404
+                logger.LogApiError(apiResults.GetError());
+                return;
             }
 
-            var results = apiResults
-                .Where(x => x.IsSuccess)
-                .Select(x => x.GetValue())
-                .SelectMany(x => x)
+            var results = apiResults.GetValue()
                 .Where(MatchFilter.IsValid)
                 .Select(x => x.ToDb())
                 .ToList();
 
             if (!results.Any())
-                continue;
+                return;
 
             var saved = await Import(results, cancellationToken);
             imported += saved;
