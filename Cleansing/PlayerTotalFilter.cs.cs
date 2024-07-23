@@ -7,8 +7,5 @@ namespace DotaData.Cleansing;
 /// </summary>
 internal static class PlayerTotalFilter
 {
-    public static bool IsValid(OpenDotaTotal total)
-    {
-        return !string.IsNullOrEmpty(total.Field) && total.Sum is not null && total.N is not null;
-    }
+    public static bool IsValid(OpenDotaTotal total) => !string.IsNullOrEmpty(total.Field) && total.Sum is not null && total.N is not null;
 }

@@ -31,10 +31,9 @@ internal static class ApiQueryExecutor
 
         var single = json.RootElement.Deserialize<T>(Options);
 
-        if (single is null)
-            throw new InvalidOperationException($"Unable to deserialize to type{typeof(T).FullName}");
-
-        return [ single ];
+        return single is null
+            ? throw new InvalidOperationException($"Unable to deserialize to type{typeof(T).FullName}")
+            : [single];
     }
 
     public static async Task<T> ExecuteSingle<T>(this ApiQuery query, HttpClient client, CancellationToken cancellationToken = new())

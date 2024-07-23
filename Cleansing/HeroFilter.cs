@@ -7,12 +7,10 @@ namespace DotaData.Cleansing;
 /// </summary>
 internal static class HeroFilter
 {
-    public static bool IsValid(OpenDotaHero hero)
-    {
-        return hero.Id is not null && 
-            hero.AttackType is not null && 
-            hero.Name is not null &&
-            hero.LocalizedName is not null &&
-            hero.PrimaryAttr is not null;
-    }
+    public static bool IsValid(OpenDotaHero hero) =>
+        hero.Id is not null &&
+        hero.AttackType is not null &&
+        hero.Name is not null &&
+        hero.LocalizedName is not null &&
+        hero.PrimaryAttr is not null;
 }
