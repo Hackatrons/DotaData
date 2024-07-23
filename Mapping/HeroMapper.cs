@@ -12,6 +12,6 @@ internal static class HeroMapper
         Legs = hero.Legs,
         PrimaryAttr = hero.PrimaryAttr,
         LocalizedName = hero.LocalizedName,
-        Name = hero.Name,
+        Name = hero.Name
     };
 }

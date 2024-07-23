@@ -30,7 +30,7 @@ internal static class PlayerMapper
             CompetitiveRank = player.CompetitiveRank,
             LeaderboardRank = player.LeaderboardRank,
             RankTier = player.RankTier,
-            SoloCompetitiveRank = player.SoloCompetitiveRank,
+            SoloCompetitiveRank = player.SoloCompetitiveRank
         };
     }
 }

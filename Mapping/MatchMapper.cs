@@ -22,6 +22,6 @@ internal static class MatchMapper
         PlayerSlot = match.PlayerSlot,
         RadiantWin = match.RadiantWin,
         StartTime = match.StartTime,
-        Version = match.Version,
+        Version = match.Version
     };
 }
