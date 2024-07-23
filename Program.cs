@@ -11,7 +11,10 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false)
     .AddUserSecrets<Program>();
-builder.Services.Configure<DbSettings>(builder.Configuration.GetSection("Database"));
+builder.Services
+    .Configure<DbSettings>(builder.Configuration.GetSection("Database"))
+    .AddOptionsWithValidateOnStart<DbSettings>()
+    .ValidateDataAnnotations();
 
 builder.Services.AddSingleton<Runner>();
 builder.Services.AddSingleton<HeroImporter>();
