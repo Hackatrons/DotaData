@@ -25,12 +25,13 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
             .Significant(false)
             .ExecuteSet<OpenDotaHero>(client, stoppingToken))
             .Where(HeroFilter.IsValid)
-            .Select(HeroMapper.ToDb);
+            .Select(HeroMapper.ToDb)
+            .ToList();
 
         await using var transaction = connection.BeginTransaction();
 
         await ImportHeroes(results, connection, transaction, stoppingToken);
-        logger.LogInformation("Imported heroes.");
+        logger.LogInformation("Imported {count} heroes.", results.Count);
 
         await transaction.CommitAsync(stoppingToken);
     }
