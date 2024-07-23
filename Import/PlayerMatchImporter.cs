@@ -39,7 +39,7 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, HttpClie
              """
              merge dbo.PlayerMatch as Target
              using Staging.PlayerMatch as Source
-             on Source.MatchId = Target.MatchId
+             on Source.MatchId = Target.MatchId and Source.AccountId = Target.AccountId
              when not matched by Target then
                 insert (
                     MatchId, 
