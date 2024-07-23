@@ -1,4 +1,4 @@
-﻿namespace DotaData.Json;
+﻿namespace DotaData.OpenDota.Json;
 
 /// <summary>
 /// Represents a json object from the Open Dota API.

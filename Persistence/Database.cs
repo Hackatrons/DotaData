@@ -3,7 +3,7 @@ using DotaData.Configuration;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 
-namespace DotaData.Db;
+namespace DotaData.Persistence;
 
 internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
 {

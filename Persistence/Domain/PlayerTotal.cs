@@ -1,4 +1,4 @@
-﻿namespace DotaData.Db.Domain;
+﻿namespace DotaData.Persistence.Domain;
 
 internal class PlayerTotal
 {

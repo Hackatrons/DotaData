@@ -1,5 +1,5 @@
-﻿using DotaData.Db;
-using DotaData.Import;
+﻿using DotaData.Import;
+using DotaData.Persistence;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

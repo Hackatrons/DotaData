@@ -1,8 +1,11 @@
-﻿namespace DotaData.Db.Domain;
+﻿namespace DotaData.OpenDota.Json;
 
-internal class Match
+/// <summary>
+/// Represents a json object from the Open Dota API.
+/// </summary>
+internal class OpenDotaMatch
 {
-    public long MatchId { get; set; }
+    public long? MatchId { get; set; }
     public int? PlayerSlot { get; set; }
     public bool? RadiantWin { get; set; }
     public int? GameMode { get; set; }

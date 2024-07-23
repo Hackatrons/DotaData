@@ -1,7 +1,7 @@
 ﻿using DotaData;
 using DotaData.Configuration;
-using DotaData.Db;
 using DotaData.Import;
+using DotaData.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

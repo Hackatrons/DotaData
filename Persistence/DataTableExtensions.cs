@@ -1,9 +1,9 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using System.Data;
+﻿using System.Data;
 using System.Reflection;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
-namespace DotaData.Db;
+namespace DotaData.Persistence;
 
 internal static class DataTableExtensions
 {

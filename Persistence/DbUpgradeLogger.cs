@@ -1,7 +1,7 @@
 ﻿using DbUp.Engine.Output;
 using Microsoft.Extensions.Logging;
 
-namespace DotaData.Db;
+namespace DotaData.Persistence;
 
 internal class DbUpgradeLogger(ILogger<DbUpgradeLogger> logger) : IUpgradeLog
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace DotaData;
+namespace DotaData.OpenDota;
 
 /// <summary>
 /// Builds Open Dota API queries.

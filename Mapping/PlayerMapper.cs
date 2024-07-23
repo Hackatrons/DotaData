@@ -1,5 +1,5 @@
-﻿using DotaData.Db.Domain;
-using DotaData.Json;
+﻿using DotaData.OpenDota.Json;
+using DotaData.Persistence.Domain;
 
 namespace DotaData.Mapping;
 

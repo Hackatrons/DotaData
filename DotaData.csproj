@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Db\Scripts\001 - Create schemas.sql" />
-    <None Remove="Db\Scripts\002 - Create match tables.sql" />
-    <None Remove="Db\Scripts\003 - Create heroes table.sql" />
-    <None Remove="Db\Scripts\004 - Create lobby type table.sql" />
-    <None Remove="Db\Scripts\005 - Create game mode table.sql" />
-    <None Remove="Db\Scripts\006 - Create totals table.sql" />
-    <None Remove="Db\Scripts\007 - Create player table.sql" />
+    <None Remove="Persistence\Scripts\001 - Create schemas.sql" />
+    <None Remove="Persistence\Scripts\002 - Create match tables.sql" />
+    <None Remove="Persistence\Scripts\003 - Create heroes table.sql" />
+    <None Remove="Persistence\Scripts\004 - Create lobby type table.sql" />
+    <None Remove="Persistence\Scripts\005 - Create game mode table.sql" />
+    <None Remove="Persistence\Scripts\006 - Create totals table.sql" />
+    <None Remove="Persistence\Scripts\007 - Create player table.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,13 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Db\Scripts\001 - Create schemas.sql" />
-    <EmbeddedResource Include="Db\Scripts\004 - Create lobby type table.sql" />
-    <EmbeddedResource Include="Db\Scripts\007 - Create player table.sql" />
-    <EmbeddedResource Include="Db\Scripts\006 - Create totals table.sql" />
-    <EmbeddedResource Include="Db\Scripts\005 - Create game mode table.sql" />
-    <EmbeddedResource Include="Db\Scripts\003 - Create heroes table.sql" />
-    <EmbeddedResource Include="Db\Scripts\002 - Create match tables.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\001 - Create schemas.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\004 - Create lobby type table.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\007 - Create player table.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\006 - Create totals table.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\005 - Create game mode table.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\003 - Create heroes table.sql" />
+    <EmbeddedResource Include="Persistence\Scripts\002 - Create match tables.sql" />
   </ItemGroup>
 
   <ItemGroup>

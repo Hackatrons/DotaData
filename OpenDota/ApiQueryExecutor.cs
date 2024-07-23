@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace DotaData;
+namespace DotaData.OpenDota;
 
 /// <summary>
 /// Invokes an api query and retrieves the results.

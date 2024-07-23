@@ -1,4 +1,4 @@
-﻿using DotaData.Json;
+﻿using DotaData.OpenDota.Json;
 
 namespace DotaData.Cleansing;
 

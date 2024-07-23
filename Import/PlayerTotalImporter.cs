@@ -1,9 +1,10 @@
 ﻿using Dapper;
 using DotaData.Cleansing;
-using DotaData.Db;
-using DotaData.Db.Domain;
-using DotaData.Json;
 using DotaData.Mapping;
+using DotaData.OpenDota;
+using DotaData.OpenDota.Json;
+using DotaData.Persistence;
+using DotaData.Persistence.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 

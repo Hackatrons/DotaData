@@ -1,6 +1,9 @@
-﻿namespace DotaData.Db.Domain;
+﻿namespace DotaData.OpenDota.Json;
 
-internal class Hero
+/// <summary>
+/// Represents a json object from the Open Dota API.
+/// </summary>
+internal class OpenDotaHero
 {
     public long? Id { get; set; }
     public string? Name { get; set; }
