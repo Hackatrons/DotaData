@@ -49,5 +49,5 @@ create table Staging.PlayerMatch(
     LeaverStatus int null,
     PartySize int null,
     HeroVariant int null,
-    constraint PK_Match primary key (AccountId,MatchId)
+    constraint PK_Staging_PlayerMatch primary key (AccountId,MatchId)
 )

@@ -3,7 +3,7 @@
     Field nvarchar(255) not null,
     [Count] int not null,
     [Sum] float not null,
-    constraint PK_Total primary key (AccountId,Field)
+    constraint PK_PlayerTotal primary key (AccountId,Field)
 )
 go
 
@@ -15,6 +15,6 @@ create table Staging.PlayerTotal(
     Field nvarchar(255) not null,
     [Count] int not null,
     [Sum] float not null,
-    constraint PK_Staging_Total primary key (AccountId,Field)
+    constraint PK_Staging_PlayerTotal primary key (AccountId,Field)
 )
 go
