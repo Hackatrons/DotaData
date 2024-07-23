@@ -4,8 +4,6 @@ using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
-using DotaData.Persistence.Domain;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
@@ -15,11 +13,11 @@ namespace DotaData.Import;
 /// </summary>
 internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Database db)
 {
-    public async Task Import(CancellationToken stoppingToken)
+    public async Task Import(CancellationToken cancellationToken)
     {
         await using var connection = db.CreateConnection();
 
-        var populated = await connection.ExecuteScalarAsync<int>("select count(*) from Raw.Hero", stoppingToken);
+        var populated = await connection.ExecuteScalarAsync<int>("select count(*) from Raw.Hero", cancellationToken);
 
         if (populated > 0)
             return;
@@ -27,21 +25,15 @@ internal class HeroImporter(ILogger<HeroImporter> logger, HttpClient client, Dat
         var results = (await new ApiQuery()
             .Heroes()
             .Significant(false)
-            .ExecuteSet<OpenDotaHero>(client, stoppingToken))
+            .ExecuteSet<OpenDotaHero>(client, cancellationToken))
             .Where(HeroFilter.IsValid)
             .Select(HeroMapper.ToDb)
             .ToList();
 
         await using var transaction = connection.BeginTransaction();
+        await connection.BulkLoad(results, "Raw.Hero", transaction, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
-        await ImportHeroes(results, connection, transaction, stoppingToken);
         logger.LogInformation("Imported {count} heroes.", results.Count);
-
-        await transaction.CommitAsync(stoppingToken);
-    }
-
-    static async Task ImportHeroes(IEnumerable<Hero> matches, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
-    {
-        await connection.BulkLoad(matches, "Raw.Hero", transaction, cancellationToken);
     }
 }

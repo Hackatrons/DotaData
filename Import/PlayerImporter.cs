@@ -4,8 +4,6 @@ using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
-using DotaData.Persistence.Domain;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
@@ -15,35 +13,34 @@ namespace DotaData.Import;
 /// </summary>
 internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client, Database db)
 {
-    public async Task Import(CancellationToken stoppingToken)
+    public async Task Import(CancellationToken cancellationToken)
     {
-        var data = (await Task.WhenAll(AccountId.All.Select(async id =>
-            await new ApiQuery()
-                .Player(id)
-                .Significant(false)
-                .ExecuteSingle<OpenDotaPlayer>(client, stoppingToken)
-        )))
-        .Where(PlayerFilter.IsValid)
-        .ToList();
+        var imported = await Task.WhenAll(AccountId.All.Select(id => Import(id, cancellationToken)));
+
+        logger.LogInformation("Imported {count} players.", imported.Sum());
+    }
+
+    async Task<int> Import(int accountId, CancellationToken cancellationToken)
+    {
+        var apiResult = await new ApiQuery()
+                    .Player(accountId)
+                    .Significant(false)
+                    .ExecuteSingle<OpenDotaPlayer>(client, cancellationToken);
+
+        if (!PlayerFilter.IsValid(apiResult))
+        {
+            logger.LogError("Invalid {type} data for {account}", nameof(OpenDotaPlayer), accountId);
+            return 0;
+        }
+
+        var dbResult = apiResult.ToDb();
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
+        await connection.BulkLoad([dbResult], "Staging.Player", transaction, cancellationToken);
 
-        var players = data.Select(x => x.ToDb());
-        var imported = await ImportPlayers(players, connection, transaction, stoppingToken);
-
-        logger.LogInformation("Imported {rows} players.", imported);
-
-        await transaction.CommitAsync(stoppingToken);
-    }
-
-    static async Task<int> ImportPlayers(IEnumerable<Player> players, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
-    {
-        await connection.BulkLoad(players, "Staging.Player", transaction, cancellationToken);
-
-        // only insert new items that we don't already know about
         // TODO: update existing when matched
-        return await connection.ExecuteAsync(
+        var affected = await connection.ExecuteAsync(
             """
             merge Raw.Player as Target
             using Staging.Player as Source
@@ -92,5 +89,9 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, HttpClient client,
             """,
             param: null,
             transaction: transaction);
+
+        await transaction.CommitAsync(cancellationToken);
+
+        return affected;
     }
 }

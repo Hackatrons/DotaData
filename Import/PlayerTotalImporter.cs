@@ -4,8 +4,6 @@ using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
-using DotaData.Persistence.Domain;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
@@ -17,48 +15,29 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
 {
     public async Task Import(CancellationToken stoppingToken)
     {
-        var queries = await Task.WhenAll(AccountId.All.Select(async id => new
-        {
-            AccountId = id,
-            // TODO: maybe run in parallel
-            Results = await new ApiQuery()
-                .Player(id)
-                .Totals()
-                .Significant(false)
-                .ExecuteSet<OpenDotaTotal>(client, stoppingToken)
-        }));
+        var imported = await Task.WhenAll(AccountId.All.Select(id => Import(id, stoppingToken)));
+
+        logger.LogInformation("Imported {rows} new player totals.", imported.Sum());
+    }
+
+    async Task<int> Import(int accountId, CancellationToken cancellationToken)
+    {
+        var results = (await new ApiQuery()
+            .Player(accountId)
+            .Totals()
+            .Significant(false)
+            .ExecuteSet<OpenDotaTotal>(client, cancellationToken))
+            .Where(PlayerTotalFilter.IsValid)
+            .Select(result => result.ToDb(accountId))
+            .ToList();
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
 
-        var data = queries.Select(x => new
-        {
-            x.AccountId,
-            x.Results,
-            DbResults = x.Results
-                .Where(PlayerTotalFilter.IsValid)
-                .Select(result => result.ToDb(x.AccountId))
-                .ToList()
-        }).ToList();
-
-        var importedPlayerMatchLinks = 0;
-        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var set in data)
-        {
-            importedPlayerMatchLinks += await ImportPlayerTotals(set.DbResults, connection, transaction, stoppingToken);
-        }
-
-        logger.LogInformation("Imported {rows} new player totals.", importedPlayerMatchLinks);
-
-        await transaction.CommitAsync(stoppingToken);
-    }
-
-    static async Task<int> ImportPlayerTotals(IEnumerable<PlayerTotal> totals, SqlConnection connection, SqlTransaction transaction, CancellationToken cancellationToken)
-    {
-        await connection.BulkLoad(totals, "Staging.PlayerTotal", transaction, cancellationToken);
+        await connection.BulkLoad(results, "Staging.PlayerTotal", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
-        return await connection.ExecuteAsync(
+        var affected = await connection.ExecuteAsync(
             """
             merge Raw.PlayerTotal as Target
             using Staging.PlayerTotal as Source
@@ -79,5 +58,9 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, HttpClie
             """,
             param: null,
             transaction: transaction);
+
+        await transaction.CommitAsync(cancellationToken);
+
+        return affected;
     }
 }

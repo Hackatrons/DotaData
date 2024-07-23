@@ -4,7 +4,6 @@ using DotaData.Mapping;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
-using DotaData.Persistence.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
@@ -14,34 +13,26 @@ namespace DotaData.Import;
 /// </summary>
 internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, HttpClient client, Database db)
 {
-    public async Task Import(CancellationToken stoppingToken)
+    public async Task Import(CancellationToken cancellationToken)
     {
-        var imported = await Task.WhenAll(AccountId.All.Select(x => ImportPlayerMatches(x, stoppingToken)));
+        var imported = await Task.WhenAll(AccountId.All.Select(id => Import(id, cancellationToken)));
         logger.LogInformation("Imported {rows} new player matches.", imported.Sum());
     }
 
-    async Task<int> ImportPlayerMatches(int accountId, CancellationToken cancellationToken)
+    async Task<int> Import(int accountId, CancellationToken cancellationToken)
     {
-        var results = await new ApiQuery()
+        var results = (await new ApiQuery()
             .Player(accountId)
             .Matches()
             .Significant(false)
-            .ExecuteSet<OpenDotaPlayerMatch>(client, cancellationToken);
-
-
-        var dbResults = results
+            .ExecuteSet<OpenDotaPlayerMatch>(client, cancellationToken))
             .Where(PlayerMatchFilter.IsValid)
             .Select(x => x.ToDb(accountId))
             .ToList();
 
-        return await ImportMatches(dbResults, cancellationToken);
-    }
-
-    async Task<int> ImportMatches(IEnumerable<PlayerMatch> matches, CancellationToken cancellationToken)
-    {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(matches, "Staging.PlayerMatch", transaction, cancellationToken);
+        await connection.BulkLoad(results, "Staging.PlayerMatch", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(
