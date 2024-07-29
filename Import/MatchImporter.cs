@@ -6,6 +6,7 @@ using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
 using DotaData.Persistence.Domain;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
 namespace DotaData.Import;
@@ -15,69 +16,65 @@ namespace DotaData.Import;
 /// </summary>
 internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient client, Database db)
 {
-    const int Limit = 100;
-
     public async Task Import(CancellationToken cancellationToken)
     {
         await using var connection = db.CreateConnection();
 
-        // grab a list of matches to import
-        // prefer the most recent
-        // exclude those we've already tried
-        var toQuery = (await connection.QueryAsync<dynamic>(
-           $"""
-           select distinct top {Limit} PM.MatchId, PM.StartTime
-           from dbo.PlayerMatch PM
-           left join dbo.Match M on M.MatchId = PM.MatchId
-           left join dbo.MatchImport MI on MI.MatchId = PM.MatchId
-           where M.MatchId is null and MI.MatchId is null
-           order by StartTime desc
-           """)).ToList();
-
-        if (!toQuery.Any())
-            return;
-
-        // TODO: restrict work within the 2,000 daily rate limit
-        var ids = toQuery.Select(x => (long)x.MatchId).ToList();
+        var ids = (await GetMatchesToQuery(connection)).ToList();
         var imported = 0;
 
-        // I've tried running this in parallel but the server is very quick to send 429's back
-        // seems safer to just run 1 at a time
-        foreach (var id in ids)
+        while (ids.Any())
         {
-            var apiResults = await new ApiQuery()
-                .Match(id)
-                .ExecuteSet<OpenDotaMatch>(client, cancellationToken);
-
-            if (apiResults.IsError)
+            // I've tried running this in parallel but the server is very quick to send 429's back
+            // seems safer to just run 1 at a time
+            foreach (var id in ids)
             {
-                var error = apiResults.GetError();
-                logger.LogApiError(error);
+                var apiResults = await new ApiQuery()
+                    .Match(id)
+                    .ExecuteSet<OpenDotaMatch>(client, cancellationToken);
 
-                await connection.ExecuteAsync(
-                    """
+                if (apiResults.IsError)
+                {
+                    var error = apiResults.GetError();
+                    var httpError = error as HttpRequestException;
+
+                    logger.LogApiError(error);
+
+                    if (httpError?.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        // we're sending too fast, wait a minute
+                        await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                        continue;
+                    }
+
+                    await connection.ExecuteAsync(
+                        """
                         insert into dbo.MatchImport (MatchId, Success, ErrorCode, ErrorMessage)
                         values (@MatchId, @Success, @ErrorCode, @ErrorMessage)
-                    """, param: new {
-                        MatchId = id,
-                        Success = false,
-                        ErrorCode = (int?)(error as HttpRequestException)?.StatusCode,
-                        ErrorMessage = error.Message,
-                    });
+                        """, param: new
+                        {
+                            MatchId = id,
+                            Success = false,
+                            ErrorCode = (int?)httpError?.StatusCode,
+                            ErrorMessage = error.Message,
+                        });
 
-                continue;
+                    continue;
+                }
+
+                var results = apiResults.GetValue()
+                    .Where(MatchFilter.IsValid)
+                    .Select(x => x.ToDb())
+                    .ToList();
+
+                if (!results.Any())
+                    continue;
+
+                var saved = await Import(results, cancellationToken);
+                imported += saved;
             }
 
-            var results = apiResults.GetValue()
-                .Where(MatchFilter.IsValid)
-                .Select(x => x.ToDb())
-                .ToList();
-
-            if (!results.Any())
-                return;
-
-            var saved = await Import(results, cancellationToken);
-            imported += saved;
+            ids = (await GetMatchesToQuery(connection)).ToList();
         }
 
         logger.LogInformation("Imported {count} new matches", imported);
@@ -148,5 +145,23 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         await transaction.CommitAsync(cancellationToken);
 
         return affected;
+    }
+
+    static async Task<IEnumerable<long>> GetMatchesToQuery(SqlConnection connection)
+    {
+        // grab a list of matches to import
+        // prefer the most recent
+        // exclude those we've already tried
+        var toQuery = await connection.QueryAsync<dynamic>(
+            """
+                select distinct top 100 PM.MatchId, PM.StartTime
+                from dbo.PlayerMatch PM
+                left join dbo.Match M on M.MatchId = PM.MatchId
+                left join dbo.MatchImport MI on MI.MatchId = PM.MatchId
+                where M.MatchId is null and MI.MatchId is null
+                order by StartTime desc
+            """);
+
+        return toQuery.Select(x => (long)x.MatchId);
     }
 }
