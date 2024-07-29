@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using DotaData.Monad;
+using DotaData.ErrorHandling;
 
 namespace DotaData.OpenDota;
 

@@ -1,4 +1,4 @@
-﻿namespace DotaData.Monad
+﻿namespace DotaData.ErrorHandling
 {
     /// <summary>
     /// A discriminated union that represents a value or exception, and never both.
