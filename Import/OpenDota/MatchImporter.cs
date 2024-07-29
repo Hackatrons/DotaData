@@ -29,7 +29,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
             // seems safer to just run 1 at a time
             foreach (var id in ids)
             {
-                var apiResults = await new ApiQuery()
+                var apiResults = await client.Query()
                     .Match(id)
                     .ExecuteSet<OpenDotaMatch>(client, cancellationToken);
 

@@ -23,7 +23,8 @@ internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client,
         if (populated > 0)
             return;
 
-        var apiResults = await new ApiQuery()
+        var apiResults = await client
+            .Query()
             .Heroes()
             .Significant(false)
             .ExecuteSet<OpenDotaHero>(client, cancellationToken);

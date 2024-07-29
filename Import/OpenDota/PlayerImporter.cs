@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
-using DotaData.Mapping;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -24,10 +23,11 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, OpenDotaClient cli
 
     async Task<int> Import(int accountId, CancellationToken cancellationToken)
     {
-        var apiResult = await new ApiQuery()
-                    .Player(accountId)
-                    .Significant(false)
-                    .ExecuteSingle<OpenDotaPlayer>(client, cancellationToken);
+        var apiResult = await client
+            .Query()
+            .Player(accountId)
+            .Significant(false)
+            .ExecuteSingle<OpenDotaPlayer>(client, cancellationToken);
 
         if (apiResult.IsError)
         {

@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
-using DotaData.Mapping;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
@@ -23,7 +22,8 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, OpenDota
 
     async Task<int> Import(int accountId, CancellationToken cancellationToken)
     {
-        var apiResults = await new ApiQuery()
+        var apiResults = await client
+            .Query()
             .Player(accountId)
             .Matches()
             .Significant(false)
