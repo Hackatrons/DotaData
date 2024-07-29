@@ -63,6 +63,7 @@ internal class ApiQuery
     /// Specifies whether to include significant results.
     /// </summary>
     public ApiQuery Significant(bool significant)
+        // exclude those we've already tried
     {
         _significant = significant;
         return this;

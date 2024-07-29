@@ -40,24 +40,24 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
                     logger.LogApiError(error);
 
-                    if (httpError?.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
-                    {
-                        // we're sending too fast, wait a minute
-                        await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-                        continue;
-                    }
-
                     await connection.ExecuteAsync(
                         """
-                        insert into OpenDota.MatchImport (MatchId, Success, ErrorCode, ErrorMessage)
-                        values (@MatchId, @Success, @ErrorCode, @ErrorMessage)
+                        insert into OpenDota.MatchImport (MatchId, Success, ErrorCode, ErrorMessage, Timestamp)
+                        values (@MatchId, @Success, @ErrorCode, @ErrorMessage, @Timestamp)
                         """, param: new
                         {
                             MatchId = id,
                             Success = false,
                             ErrorCode = (int?)httpError?.StatusCode,
                             ErrorMessage = error.Message,
+                            Timestamp = DateTime.UtcNow
                         });
+
+                    if (httpError?.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    {
+                        // we're sending too fast, wait a minute
+                        await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                    }
 
                     continue;
                 }
@@ -281,15 +281,22 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
     {
         // grab a list of matches to import
         // prefer the most recent
-        // exclude those we've already tried
+        // if we got a 429 response, then wait 1 day to try again
         var toQuery = await connection.QueryAsync<dynamic>(
             """
-                select distinct top 100 PM.MatchId, PM.StartTime
-                from OpenDota.PlayerMatch PM
-                left join OpenDota.Match M on M.MatchId = PM.MatchId
-                left join OpenDota.MatchImport MI on MI.MatchId = PM.MatchId
-                where M.MatchId is null and MI.MatchId is null
-                order by StartTime desc
+            select distinct top 100 PM.MatchId, PM.StartTime
+            from OpenDota.PlayerMatch PM
+            where 
+            PM.MatchId not in
+            (
+                select MatchId from OpenDota.Match
+            )
+            and PM.MatchId not in
+            (
+                select MatchId from OpenDota.MatchImport
+                where (ErrorCode != 429 or datediff(day, getutcdate(), [Timestamp]) = 0)
+            )
+            order by StartTime desc
             """);
 
         return toQuery.Select(x => (long)x.MatchId);
