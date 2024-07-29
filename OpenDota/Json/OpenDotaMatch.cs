@@ -27,5 +27,6 @@ namespace DotaData.OpenDota.Json
         public int? DireScore { get; set; }
         public int? Patch { get; set; }
         public int? Region { get; set; }
+        public OpenDotaMatchPlayerDetail[]? Players { get; set; }
     }
 }

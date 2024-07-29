@@ -8,6 +8,7 @@ using DotaData.Persistence;
 using DotaData.Persistence.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace DotaData.Import;
 
@@ -72,6 +73,18 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
                 var saved = await Import(results, cancellationToken);
                 imported += saved;
+
+                var details = apiResults.GetValue()
+                    .Where(MatchFilter.IsValid)
+                    .SelectMany(x => x.Players ?? [])
+                    .Where(MatchPlayerDetailFilter.IsValid)
+                    .Select(x => x.ToDb(id))
+                    .ToList();
+
+                if (!details.Any())
+                    continue;
+
+                await Import(details, cancellationToken);
             }
 
             ids = (await GetMatchesToQuery(connection)).ToList();
@@ -115,7 +128,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
                     ,[DireScore]
                     ,[Patch]
                     ,[Region])
-                values (
+               values (
                     Source.[MatchId]
                     ,Source.[RadiantWin]
                     ,Source.[Duration]
@@ -137,7 +150,125 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
                     ,Source.[RadiantScore]
                     ,Source.[DireScore]
                     ,Source.[Patch]
-                    ,Source.[Region]);
+                    ,Source.[Region]
+                );
+            """,
+            param: null,
+            transaction: transaction);
+
+        await transaction.CommitAsync(cancellationToken);
+
+        return affected;
+    }
+
+    async Task<int> Import(IEnumerable<MatchPlayerDetail> details, CancellationToken cancellationToken)
+    {
+        await using var connection = db.CreateConnection();
+        await using var transaction = connection.BeginTransaction();
+        await connection.BulkLoad(details, "Staging.MatchPlayerDetail", transaction, cancellationToken);
+
+        var affected = await connection.ExecuteAsync(
+            """
+            merge dbo.MatchPlayerDetail as Target
+            using Staging.MatchPlayerDetail as Source
+            on Source.MatchId = Target.MatchId and Source.AccountId = Target.AccountId
+            when not matched by Target then
+               insert (
+                    [MatchId]
+                    ,[AccountId]
+                    ,[PlayerSlot]
+                    ,[TeamNumber]
+                    ,[TeamSlot]
+                    ,[HeroId]
+                    ,[HeroVariant]
+                    ,[Item0]
+                    ,[Item1]
+                    ,[Item2]
+                    ,[Item3]
+                    ,[Item4]
+                    ,[Item5]
+                    ,[Backpack0]
+                    ,[Backpack1]
+                    ,[Backpack2]
+                    ,[ItemNeutral]
+                    ,[Kills]
+                    ,[Deaths]
+                    ,[Assists]
+                    ,[LeaverStatus]
+                    ,[LastHits]
+                    ,[Denies]
+                    ,[GoldPerMin]
+                    ,[XpPerMin]
+                    ,[Level]
+                    ,[NetWorth]
+                    ,[AghanimsScepter]
+                    ,[AghanimsShard]
+                    ,[Moonshard]
+                    ,[HeroDamage]
+                    ,[TowerDamage]
+                    ,[HeroHealing]
+                    ,[Gold]
+                    ,[GoldSpent]
+                    ,[AbilityUpgradesArr]
+                    ,[PersonaName]
+                    ,[RadiantWin]
+                    ,[Cluster]
+                    ,[IsRadiant]
+                    ,[TotalGold]
+                    ,[TotalXp]
+                    ,[KillsPerMin]
+                    ,[Kda]
+                    ,[Abandons]
+                    ,[RankTier]
+               )
+               values (
+                     Source.[MatchId]
+                    ,Source.[AccountId]
+                    ,Source.[PlayerSlot]
+                    ,Source.[TeamNumber]
+                    ,Source.[TeamSlot]
+                    ,Source.[HeroId]
+                    ,Source.[HeroVariant]
+                    ,Source.[Item0]
+                    ,Source.[Item1]
+                    ,Source.[Item2]
+                    ,Source.[Item3]
+                    ,Source.[Item4]
+                    ,Source.[Item5]
+                    ,Source.[Backpack0]
+                    ,Source.[Backpack1]
+                    ,Source.[Backpack2]
+                    ,Source.[ItemNeutral]
+                    ,Source.[Kills]
+                    ,Source.[Deaths]
+                    ,Source.[Assists]
+                    ,Source.[LeaverStatus]
+                    ,Source.[LastHits]
+                    ,Source.[Denies]
+                    ,Source.[GoldPerMin]
+                    ,Source.[XpPerMin]
+                    ,Source.[Level]
+                    ,Source.[NetWorth]
+                    ,Source.[AghanimsScepter]
+                    ,Source.[AghanimsShard]
+                    ,Source.[Moonshard]
+                    ,Source.[HeroDamage]
+                    ,Source.[TowerDamage]
+                    ,Source.[HeroHealing]
+                    ,Source.[Gold]
+                    ,Source.[GoldSpent]
+                    ,Source.[AbilityUpgradesArr]
+                    ,Source.[PersonaName]
+                    ,Source.[RadiantWin]
+                    ,Source.[Cluster]
+                    ,Source.[IsRadiant]
+                    ,Source.[TotalGold]
+                    ,Source.[TotalXp]
+                    ,Source.[KillsPerMin]
+                    ,Source.[Kda]
+                    ,Source.[Abandons]
+                    ,Source.[RankTier]
+               );
             """,
             param: null,
             transaction: transaction);
