@@ -1,7 +1,7 @@
 ﻿using DotaData.OpenDota.Json;
-using DotaData.Persistence.Domain;
+using DotaData.Persistence.Domain.OpenDota;
 
-namespace DotaData.Mapping;
+namespace DotaData.Mapping.OpenDota;
 
 /// <summary>
 /// Maps API objects to the database equivalent.

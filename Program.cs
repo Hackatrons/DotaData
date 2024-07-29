@@ -1,6 +1,6 @@
 ﻿using DotaData;
 using DotaData.Configuration;
-using DotaData.Import;
+using DotaData.Import.OpenDota;
 using DotaData.OpenDota;
 using DotaData.Persistence;
 using Microsoft.Extensions.Configuration;

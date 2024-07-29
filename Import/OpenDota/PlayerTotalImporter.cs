@@ -1,13 +1,14 @@
 ﻿using Dapper;
-using DotaData.Cleansing;
+using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
 using DotaData.Mapping;
+using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
 using Microsoft.Extensions.Logging;
 
-namespace DotaData.Import;
+namespace DotaData.Import.OpenDota;
 
 /// <summary>
 /// Imports player performance metrics to the database.
@@ -44,13 +45,13 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, OpenDota
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
 
-        await connection.BulkLoad(dbResults, "Staging.PlayerTotal", transaction, cancellationToken);
+        await connection.BulkLoad(dbResults, "OpenDotaStaging.PlayerTotal", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(
             """
-            merge dbo.PlayerTotal as Target
-            using Staging.PlayerTotal as Source
+            merge OpenDota.PlayerTotal as Target
+            using OpenDotaStaging.PlayerTotal as Source
             on Source.AccountId = Target.AccountId and Source.Field = Target.Field
             when not matched by Target then
                insert (

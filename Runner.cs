@@ -1,4 +1,4 @@
-﻿using DotaData.Import;
+﻿using DotaData.Import.OpenDota;
 using DotaData.Persistence;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

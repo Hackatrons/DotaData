@@ -1,13 +1,14 @@
 ﻿using Dapper;
-using DotaData.Cleansing;
+using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
 using DotaData.Mapping;
+using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
 using Microsoft.Extensions.Logging;
 
-namespace DotaData.Import;
+namespace DotaData.Import.OpenDota;
 
 /// <summary>
 /// Imports match information to the database.
@@ -42,13 +43,13 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, OpenDota
 
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(dbResults, "Staging.PlayerMatch", transaction, cancellationToken);
+        await connection.BulkLoad(dbResults, "OpenDotaStaging.PlayerMatch", transaction, cancellationToken);
 
         // only insert new items that we don't already know about
         var affected = await connection.ExecuteAsync(
              """
-             merge dbo.PlayerMatch as Target
-             using Staging.PlayerMatch as Source
+             merge OpenDota.PlayerMatch as Target
+             using OpenDotaStaging.PlayerMatch as Source
              on Source.MatchId = Target.MatchId and Source.AccountId = Target.AccountId
              when not matched by Target then
                 insert (

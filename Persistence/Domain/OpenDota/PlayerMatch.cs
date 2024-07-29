@@ -1,4 +1,4 @@
-﻿namespace DotaData.Persistence.Domain;
+﻿namespace DotaData.Persistence.Domain.OpenDota;
 
 internal class PlayerMatch
 {

@@ -1,16 +1,15 @@
 ﻿using Dapper;
-using DotaData.Cleansing;
+using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
-using DotaData.Mapping;
+using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
-using DotaData.Persistence.Domain;
+using DotaData.Persistence.Domain.OpenDota;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
-namespace DotaData.Import;
+namespace DotaData.Import.OpenDota;
 
 /// <summary>
 /// Imports match information to the database.
@@ -50,7 +49,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
 
                     await connection.ExecuteAsync(
                         """
-                        insert into dbo.MatchImport (MatchId, Success, ErrorCode, ErrorMessage)
+                        insert into OpenDota.MatchImport (MatchId, Success, ErrorCode, ErrorMessage)
                         values (@MatchId, @Success, @ErrorCode, @ErrorMessage)
                         """, param: new
                         {
@@ -97,12 +96,12 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
     {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(matches, "Staging.Match", transaction, cancellationToken);
+        await connection.BulkLoad(matches, "OpenDotaStaging.Match", transaction, cancellationToken);
 
         var affected = await connection.ExecuteAsync(
             """
-            merge dbo.Match as Target
-            using Staging.Match as Source
+            merge OpenDota.Match as Target
+            using OpenDotaStaging.Match as Source
             on Source.MatchId = Target.MatchId
             when not matched by Target then
                insert (
@@ -165,12 +164,12 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
     {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(details, "Staging.MatchPlayerDetail", transaction, cancellationToken);
+        await connection.BulkLoad(details, "OpenDotaStaging.MatchPlayerDetail", transaction, cancellationToken);
 
         var affected = await connection.ExecuteAsync(
             """
-            merge dbo.MatchPlayerDetail as Target
-            using Staging.MatchPlayerDetail as Source
+            merge OpenDota.MatchPlayerDetail as Target
+            using OpenDotaStaging.MatchPlayerDetail as Source
             on Source.MatchId = Target.MatchId and Source.AccountId = Target.AccountId
             when not matched by Target then
                insert (
@@ -286,9 +285,9 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         var toQuery = await connection.QueryAsync<dynamic>(
             """
                 select distinct top 100 PM.MatchId, PM.StartTime
-                from dbo.PlayerMatch PM
-                left join dbo.Match M on M.MatchId = PM.MatchId
-                left join dbo.MatchImport MI on MI.MatchId = PM.MatchId
+                from OpenDota.PlayerMatch PM
+                left join OpenDota.Match M on M.MatchId = PM.MatchId
+                left join OpenDota.MatchImport MI on MI.MatchId = PM.MatchId
                 where M.MatchId is null and MI.MatchId is null
                 order by StartTime desc
             """);

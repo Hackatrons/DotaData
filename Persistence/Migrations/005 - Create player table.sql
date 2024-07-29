@@ -1,4 +1,4 @@
-﻿create table dbo.Player(
+﻿create table OpenDota.Player(
     AccountId int not null,
     PersonaName nvarchar(255) null,
     Name nvarchar(255) null,
@@ -19,11 +19,11 @@
     SoloCompetitiveRank int null,
     CompetitiveRank int null,
     LeaderboardRank int null,
-    constraint PK_Player primary key (AccountId)
+    constraint PK_OpenDota_Player primary key (AccountId)
 )
 go
 
-create table Staging.Player(
+create table OpenDotaStaging.Player(
     AccountId int not null,
     PersonaName nvarchar(255) null,
     Name nvarchar(255) null,

@@ -26,6 +26,7 @@ internal class Database(IOptions<DbSettings> settings, DbUpgradeLogger logger)
         EnsureDatabase.For.SqlDatabase(settings.Value.ConnectionString);
 
         var upgrader = DeployChanges.To.SqlDatabase(settings.Value.ConnectionString)
+            .WithTransaction()
             .WithScriptsEmbeddedInAssembly(typeof(Database).Assembly)
             .LogTo(logger)
             .Build();

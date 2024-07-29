@@ -1,4 +1,4 @@
-﻿create table dbo.PlayerMatch(
+﻿create table OpenDota.PlayerMatch(
     AccountId int not null,
     MatchId bigint not null,
     PlayerSlot int null,
@@ -16,22 +16,22 @@
     LeaverStatus int null,
     PartySize int null,
     HeroVariant int null,
-    constraint PK_PlayerMatch primary key (AccountId,MatchId)
+    constraint PK_OpenDota_PlayerMatch primary key (AccountId,MatchId)
 )
 
-alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_GameMode] foreign key ([GameMode]) references [dbo].[GameMode] ([Id])
+alter table [OpenDota].[PlayerMatch] with check add constraint [FK_OpenDota_PlayerMatch_GameMode] foreign key ([GameMode]) references [Reference].[GameMode] ([Id])
 go
 
-alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_Hero] foreign key ([HeroId]) references [dbo].[Hero] ([Id])
+alter table [OpenDota].[PlayerMatch] with check add constraint [FK_OpenDota_PlayerMatch_Hero] foreign key ([HeroId]) references [Reference].[Hero] ([Id])
 go
 
-alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_LobbyType] foreign key ([LobbyType]) references  [dbo].[LobbyType] ([Id])
+alter table [OpenDota].[PlayerMatch] with check add constraint [FK_OpenDota_PlayerMatch_LobbyType] foreign key ([LobbyType]) references [Reference].[LobbyType] ([Id])
 go
 
-alter table [dbo].[PlayerMatch] with check add constraint [FK_PlayerMatch_Player] foreign key ([AccountId]) references [dbo].[Player] ([AccountId])
+alter table [OpenDota].[PlayerMatch] with check add constraint [FK_OpenDota_PlayerMatch_Player] foreign key ([AccountId]) references [OpenDota].[Player] ([AccountId])
 go
 
-create table Staging.PlayerMatch(
+create table OpenDotaStaging.PlayerMatch(
     AccountId int not null,
     MatchId bigint not null,
     PlayerSlot int null,

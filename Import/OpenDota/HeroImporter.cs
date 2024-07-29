@@ -1,13 +1,13 @@
 ﻿using Dapper;
-using DotaData.Cleansing;
+using DotaData.Cleansing.OpenDota;
 using DotaData.Logging;
-using DotaData.Mapping;
+using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
 using DotaData.OpenDota.Json;
 using DotaData.Persistence;
 using Microsoft.Extensions.Logging;
 
-namespace DotaData.Import;
+namespace DotaData.Import.OpenDota;
 
 /// <summary>
 /// Imports hero information to the database.
@@ -18,7 +18,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client,
     {
         await using var connection = db.CreateConnection();
 
-        var populated = await connection.ExecuteScalarAsync<int>("select count(*) from dbo.Hero", cancellationToken);
+        var populated = await connection.ExecuteScalarAsync<int>("select count(*) from Reference.Hero", cancellationToken);
 
         if (populated > 0)
             return;
@@ -41,7 +41,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client,
             .ToList();
 
         await using var transaction = connection.BeginTransaction();
-        await connection.BulkLoad(dbResults, "dbo.Hero", transaction, cancellationToken, true);
+        await connection.BulkLoad(dbResults, "Reference.Hero", transaction, cancellationToken, true);
         await transaction.CommitAsync(cancellationToken);
 
         logger.LogInformation("Imported {count} heroes.", dbResults.Count);

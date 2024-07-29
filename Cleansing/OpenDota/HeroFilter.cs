@@ -1,6 +1,6 @@
 ﻿using DotaData.OpenDota.Json;
 
-namespace DotaData.Cleansing;
+namespace DotaData.Cleansing.OpenDota;
 
 /// <summary>
 /// Determines whether a result is good data or not (and should be discarded).

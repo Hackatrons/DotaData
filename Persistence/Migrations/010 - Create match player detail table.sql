@@ -1,4 +1,4 @@
-﻿create table dbo.MatchPlayerDetail(
+﻿create table OpenDota.MatchPlayerDetail(
     MatchId bigint not null,
     AccountId int not null,
 	PlayerSlot int null,
@@ -46,14 +46,14 @@
 	Abandons int null,
 	RankTier int null,
 	
-	constraint PK_MatchPlayerDetail primary key (MatchId,AccountId)
+	constraint PK_OpenDota_MatchPlayerDetail primary key (MatchId,AccountId)
 )
 go
 
-alter table [dbo].[MatchPlayerDetail] with check add constraint [FK_MatchPlayerDetail_Match] foreign key ([MatchId]) references [dbo].[Match] ([MatchId])
+alter table [OpenDota].[MatchPlayerDetail] with check add constraint [FK_OpenDota_MatchPlayerDetail_Match] foreign key ([MatchId]) references [OpenDota].[Match] ([MatchId])
 go
 
-create table Staging.MatchPlayerDetail(
+create table OpenDotaStaging.MatchPlayerDetail(
     MatchId bigint not null,
     AccountId int not null,
 	PlayerSlot int null,
@@ -101,7 +101,7 @@ create table Staging.MatchPlayerDetail(
 	Abandons int null,
 	RankTier int null,
 	
-	constraint PK_Staging_MatchPlayerDetail primary key (MatchId,AccountId)
+	constraint PK_OpenDotaStaging_MatchPlayerDetail primary key (MatchId,AccountId)
 )
 go
 

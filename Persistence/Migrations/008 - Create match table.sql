@@ -1,4 +1,4 @@
-﻿create table dbo.Match(
+﻿create table OpenDota.Match(
     MatchId bigint not null,
 	RadiantWin bit null,
 	Duration int null,
@@ -21,11 +21,11 @@
 	DireScore int null,
 	Patch int null,
 	Region int null,
-    constraint PK_Match primary key (MatchId)
+    constraint PK_OpenDota_Match primary key (MatchId)
 )
 go
 
-create table Staging.Match(
+create table OpenDotaStaging.Match(
     MatchId bigint not null,
 	RadiantWin bit null,
 	Duration int null,
@@ -48,6 +48,6 @@ create table Staging.Match(
 	DireScore int null,
 	Patch int null,
 	Region int null,
-    constraint PK_Staging_Match primary key (MatchId)
+    constraint PK_OpenDotaStaging_Match primary key (MatchId)
 )
 go
