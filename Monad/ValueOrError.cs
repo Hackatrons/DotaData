@@ -5,7 +5,7 @@
     /// </summary>
     internal readonly struct ValueOrError<T>
     {
-        public bool IsError => _error != null;
+        public bool IsError => !IsSuccess;
         public bool IsSuccess => _error == null;
 
         readonly T? _value;
