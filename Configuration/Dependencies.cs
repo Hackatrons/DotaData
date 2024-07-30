@@ -17,6 +17,10 @@ internal static class Dependencies
             .Configure<DbSettings>(builder.Configuration.GetSection("Database"))
             .AddOptionsWithValidateOnStart<DbSettings>()
             .ValidateDataAnnotations();
+        builder.Services
+            .Configure<StratzSettings>(builder.Configuration.GetSection("Stratz"))
+            .AddOptionsWithValidateOnStart<StratzSettings>()
+            .ValidateDataAnnotations();
 
         return builder;
     }

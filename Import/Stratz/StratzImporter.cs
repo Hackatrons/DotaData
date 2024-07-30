@@ -1,10 +1,9 @@
 ﻿namespace DotaData.Import.Stratz;
 
-internal class StratzImporter()
+internal class StratzImporter(PlayerMatchImporter playerMatchImporter)
 {
     public async Task Import(CancellationToken stoppingToken)
     {
-        // import order is important as we have key constraints to meet
-        await Task.Yield();
+        await playerMatchImporter.Import(stoppingToken);
     }
 }
