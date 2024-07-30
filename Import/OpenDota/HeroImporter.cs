@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing.OpenDota;
+using DotaData.Http;
 using DotaData.Logging;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
@@ -27,7 +28,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client,
             .Query()
             .Heroes()
             .Significant(false)
-            .ExecuteSet<OpenDotaHero>(client, cancellationToken);
+            .GetJsonResults<OpenDotaHero>(client, cancellationToken);
 
         if (!apiResults.IsSuccess)
         {

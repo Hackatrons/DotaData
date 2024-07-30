@@ -4,6 +4,6 @@
     {
         public HttpClient HttpClient => httpClient;
 
-        public ApiQuery Query() => new();
+        public OpenDotaApiQuery Query() => new();
     }
 }

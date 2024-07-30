@@ -5,7 +5,7 @@ namespace DotaData.OpenDota;
 /// <summary>
 /// Builds Open Dota API queries.
 /// </summary>
-internal class ApiQuery
+internal class OpenDotaApiQuery
 {
     const string BaseUrl = "https://api.opendota.com/";
 
@@ -16,7 +16,7 @@ internal class ApiQuery
     /// <summary>
     /// Specify the player id for the API query.
     /// </summary>
-    public ApiQuery Player(int accountId)
+    public OpenDotaApiQuery Player(int accountId)
     {
         _path = $"/api/players/{accountId}";
         return this;
@@ -25,7 +25,7 @@ internal class ApiQuery
     /// <summary>
     /// Specifies matches should be retrieved (used in conjuction with player queries).
     /// </summary>
-    public ApiQuery Matches()
+    public OpenDotaApiQuery Matches()
     {
         _subPath = "matches";
         return this;
@@ -34,7 +34,7 @@ internal class ApiQuery
     /// <summary>
     /// Specifies a specific match should be retrieved.
     /// </summary>
-    public ApiQuery Match(long matchId)
+    public OpenDotaApiQuery Match(long matchId)
     {
         // matches by themselves
         _path = $"/api/matches/{matchId}";
@@ -44,7 +44,7 @@ internal class ApiQuery
     /// <summary>
     /// Specifies totals should be retrieved.
     /// </summary>
-    public ApiQuery Totals()
+    public OpenDotaApiQuery Totals()
     {
         _subPath = "totals";
         return this;
@@ -53,7 +53,7 @@ internal class ApiQuery
     /// <summary>
     /// Specifies heroes should be retrieved.
     /// </summary>
-    public ApiQuery Heroes()
+    public OpenDotaApiQuery Heroes()
     {
         _path = "/api/heroes";
         return this;
@@ -62,7 +62,7 @@ internal class ApiQuery
     /// <summary>
     /// Specifies whether to include significant results.
     /// </summary>
-    public ApiQuery Significant(bool significant)
+    public OpenDotaApiQuery Significant(bool significant)
         // exclude those we've already tried
     {
         _significant = significant;

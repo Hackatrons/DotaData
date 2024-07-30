@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing.OpenDota;
+using DotaData.Http;
 using DotaData.Logging;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
@@ -31,7 +32,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
             {
                 var apiResults = await client.Query()
                     .Match(id)
-                    .ExecuteSet<OpenDotaMatch>(client, cancellationToken);
+                    .GetJsonResults<OpenDotaMatch>(client, cancellationToken);
 
                 if (apiResults.IsError)
                 {

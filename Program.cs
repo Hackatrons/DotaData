@@ -1,8 +1,10 @@
 ﻿using DotaData;
 using DotaData.Configuration;
 using DotaData.Import.OpenDota;
+using DotaData.Import.Stratz;
 using DotaData.OpenDota;
 using DotaData.Persistence;
+using DotaData.Stratz;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,8 +26,14 @@ builder.Services
     .AddHttpClient<OpenDotaClient>()
     .AddStandardResilienceHandler();
 
+builder.Services
+    .AddHttpClient<StratzClient>()
+    .AddStandardResilienceHandler();
+
 // register our classes
 builder.Services.AddSingleton<Runner>();
+builder.Services.AddSingleton<OpenDotaImporter>();
+builder.Services.AddSingleton<StratzImporter>();
 builder.Services.AddSingleton<HeroImporter>();
 builder.Services.AddSingleton<PlayerImporter>();
 builder.Services.AddSingleton<PlayerTotalImporter>();

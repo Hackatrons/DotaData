@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DotaData.Cleansing.OpenDota;
+using DotaData.Http;
 using DotaData.Logging;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
@@ -28,7 +29,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, OpenDota
             .Player(accountId)
             .Totals()
             .Significant(false)
-            .ExecuteSet<OpenDotaTotal>(client, cancellationToken);
+            .GetJsonResults<OpenDotaTotal>(client, cancellationToken);
 
         if (apiResults.IsError)
         {
