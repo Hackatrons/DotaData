@@ -31,16 +31,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Persistence\Migrations\001 - Create schemas.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\003 - Create lobby type table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\005 - Create player table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\010 - Create match player detail table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\009 - Create match import table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\008 - Create match table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\007 - Create totals table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\004 - Create game mode table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\002 - Create heroes table.sql" />
-    <EmbeddedResource Include="Persistence\Migrations\006 - Create player match tables.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Base\001 - Create schemas.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Base\003 - Create lobby type table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\002 - Create player table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\006 - Create match player detail table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\005 - Create match import table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\004 - Create match table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\003 - Create totals table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Base\004 - Create game mode table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Base\002 - Create heroes table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\OpenDota\001 - Create player match tables.sql" />
   </ItemGroup>
 
   <ItemGroup>
