@@ -25,9 +25,16 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, StratzCl
 
     async Task<int> Import(int accountId, CancellationToken cancellationToken)
     {
+        int position;
         var imported = 0;
-        var position = 0;
-        var apiResults = new ValueOrError<IEnumerable<Match>>();
+        ValueOrError<IEnumerable<Match>> apiResults;
+
+        await using (var connection = db.CreateConnection())
+        {
+            position = await connection.QuerySingleAsync<int>(
+                "select count(*) from Stratz.MatchPlayer where SteamAccountId = @Id",
+                param: new { Id = accountId });
+        }
 
         do
         {
