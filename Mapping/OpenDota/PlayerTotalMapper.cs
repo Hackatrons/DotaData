@@ -1,5 +1,5 @@
-﻿using DotaData.OpenDota.Json;
-using DotaData.Persistence.Domain.OpenDota;
+﻿using DotaData.Persistence.Domain.OpenDota;
+using DotaData.OpenDota.Json;
 
 namespace DotaData.Mapping.OpenDota;
 
@@ -8,7 +8,7 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class PlayerTotalMapper
 {
-    public static PlayerTotal ToDb(this OpenDotaTotal total, int accountId) => new()
+    public static OpenDotaPlayerTotal ToDb(this Total total, int accountId) => new()
     {
         AccountId = accountId,
         Field = total.Field ?? throw new ArgumentNullException(nameof(total), "Field cannot be null"),

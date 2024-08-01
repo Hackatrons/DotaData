@@ -8,7 +8,7 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class MatchPlayerDetailMapper
 {
-    public static MatchPlayerDetail ToDb(this OpenDotaMatchPlayerDetail detail, long matchId) => new()
+    public static OpenDotaMatchPlayer ToDb(this MatchPlayer detail, long matchId) => new()
     {
         AccountId = detail.AccountId ?? throw new ArgumentNullException(nameof(detail), "AccountId cannot be null"),
         MatchId = matchId,

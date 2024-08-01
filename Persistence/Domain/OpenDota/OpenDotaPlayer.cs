@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class Player
+internal class OpenDotaPlayer
 {
     public long AccountId { get; set; }
     public string? PersonaName { get; set; }

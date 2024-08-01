@@ -8,7 +8,7 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class HeroMapper
 {
-    public static Hero ToDb(this OpenDotaHero hero) => new()
+    public static OpenDotaHero ToDb(this Hero hero) => new()
     {
         AttackType = hero.AttackType,
         Id = hero.Id,

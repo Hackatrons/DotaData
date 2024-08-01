@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using DotaData.Configuration;
 using DotaData.Stratz;
 using Microsoft.Extensions.DependencyInjection;

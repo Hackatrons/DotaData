@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class PlayerMatch
+internal class OpenDotaPlayerMatch
 {
     public long MatchId { get; set; }
     public int AccountId { get; set; }

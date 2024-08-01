@@ -8,11 +8,11 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class PlayerMapper
 {
-    public static Player ToDb(this OpenDotaPlayer player)
+    public static OpenDotaPlayer ToDb(this Player player)
     {
         if (player.Profile is null) throw new ArgumentNullException(nameof(player), "Profile must not be null");
 
-        return new Player
+        return new OpenDotaPlayer
         {
             AccountId = player.Profile.AccountId ?? throw new ArgumentNullException(nameof(player), "AccountId must not be null"),
             Avatar = player.Profile.Avatar,

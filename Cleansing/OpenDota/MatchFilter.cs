@@ -7,5 +7,5 @@ namespace DotaData.Cleansing.OpenDota;
 /// </summary>
 internal static class MatchFilter
 {
-    public static bool IsValid(OpenDotaMatch match) => match.MatchId is not null;
+    public static bool IsValid(Match match) => match.MatchId is not null;
 }

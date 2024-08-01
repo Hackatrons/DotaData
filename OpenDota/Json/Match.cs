@@ -2,7 +2,7 @@
 
 namespace DotaData.OpenDota.Json;
 
-internal class OpenDotaMatch
+internal class Match
 {
     public bool? RadiantWin { get; set; }
     public int? Duration { get; set; }
@@ -27,5 +27,5 @@ internal class OpenDotaMatch
     public int? DireScore { get; set; }
     public int? Patch { get; set; }
     public int? Region { get; set; }
-    public OpenDotaMatchPlayerDetail[]? Players { get; set; }
+    public MatchPlayer[]? Players { get; set; }
 }

@@ -8,7 +8,7 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class MatchMapper
 {
-    public static Match ToDb(this OpenDotaMatch match) => new()
+    public static OpenDotaMatch ToDb(this Match match) => new()
     {
         BarracksStatusDire = match.BarracksStatusDire,
         BarracksStatusRadiant = match.BarracksStatusRadiant,

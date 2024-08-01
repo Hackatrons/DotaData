@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a json object from the Open Dota API.
 /// </summary>
-internal class OpenDotaHero
+internal class Hero
 {
     public long? Id { get; set; }
     public string? Name { get; set; }

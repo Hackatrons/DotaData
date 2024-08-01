@@ -5,7 +5,7 @@ namespace DotaData.OpenDota.Json;
 /// <summary>
 /// Represents a json object from the Open Dota API.
 /// </summary>
-internal class OpenDotaProfile
+internal class Profile
 {
     public long? AccountId { get; set; }
     [JsonPropertyName("personaname")]

@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class MatchImport
+internal class OpenDotaMatchImport
 {
     public long MatchId { get; set; }
     public bool Success { get; set; }

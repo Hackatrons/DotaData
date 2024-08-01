@@ -29,7 +29,7 @@ internal class PlayerTotalImporter(ILogger<PlayerTotalImporter> logger, OpenDota
             .Player(accountId)
             .Totals()
             .Significant(false)
-            .GetJsonResults<OpenDotaTotal>(client, cancellationToken);
+            .GetJsonResults<Total>(client, cancellationToken);
 
         if (apiResults.IsError)
         {

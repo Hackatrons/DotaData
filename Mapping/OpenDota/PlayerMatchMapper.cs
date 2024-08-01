@@ -8,7 +8,7 @@ namespace DotaData.Mapping.OpenDota;
 /// </summary>
 internal static class PlayerMatchMapper
 {
-    public static PlayerMatch ToDb(this OpenDotaPlayerMatch match, int accountId) => new()
+    public static OpenDotaPlayerMatch ToDb(this PlayerMatch match, int accountId) => new()
     {
         AccountId = accountId,
         Assists = match.Assists,

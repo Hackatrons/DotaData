@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class PlayerTotal
+internal class OpenDotaPlayerTotal
 {
     public int AccountId { get; set; }
     public string? Field { get; set; }

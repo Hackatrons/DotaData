@@ -4,7 +4,6 @@ using DotaData.Http;
 using DotaData.Logging;
 using DotaData.Mapping.OpenDota;
 using DotaData.OpenDota;
-using DotaData.OpenDota.Json;
 using DotaData.Persistence;
 using DotaData.Persistence.Domain.OpenDota;
 using Microsoft.Data.SqlClient;
@@ -32,7 +31,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
             {
                 var apiResults = await client.Query()
                     .Match(id)
-                    .GetJsonResults<OpenDotaMatch>(client, cancellationToken);
+                    .GetJsonResults<DotaData.OpenDota.Json.Match>(client, cancellationToken);
 
                 if (apiResults.IsError)
                 {
@@ -93,7 +92,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         logger.LogInformation("Imported {count} new matches", imported);
     }
 
-    async Task<int> Import(IEnumerable<Match> matches, CancellationToken cancellationToken)
+    async Task<int> Import(IEnumerable<Persistence.Domain.OpenDota.OpenDotaMatch> matches, CancellationToken cancellationToken)
     {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();
@@ -161,7 +160,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         return affected;
     }
 
-    async Task<int> Import(IEnumerable<MatchPlayerDetail> details, CancellationToken cancellationToken)
+    async Task<int> Import(IEnumerable<OpenDotaMatchPlayer> details, CancellationToken cancellationToken)
     {
         await using var connection = db.CreateConnection();
         await using var transaction = connection.BeginTransaction();

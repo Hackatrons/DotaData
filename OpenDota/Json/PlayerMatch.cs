@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a json object from the Open Dota API.
 /// </summary>
-internal class OpenDotaPlayerMatch
+internal class PlayerMatch
 {
     public long? MatchId { get; set; }
     public int? PlayerSlot { get; set; }

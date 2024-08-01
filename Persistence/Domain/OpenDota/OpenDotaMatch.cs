@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class Match
+internal class OpenDotaMatch
 {
     public long MatchId { get; set; }
     public bool? RadiantWin { get; set; }

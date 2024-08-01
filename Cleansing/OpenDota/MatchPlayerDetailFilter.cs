@@ -7,5 +7,5 @@ namespace DotaData.Cleansing.OpenDota;
 /// </summary>
 internal static class MatchPlayerDetailFilter
 {
-    public static bool IsValid(OpenDotaMatchPlayerDetail detail) => detail.AccountId is not null;
+    public static bool IsValid(MatchPlayer detail) => detail.AccountId is not null;
 }

@@ -28,7 +28,7 @@ internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, OpenDota
             .Player(accountId)
             .Matches()
             .Significant(false)
-            .GetJsonResults<OpenDotaPlayerMatch>(client, cancellationToken);
+            .GetJsonResults<PlayerMatch>(client, cancellationToken);
 
         if (apiResults.IsError)
         {

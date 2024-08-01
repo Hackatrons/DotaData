@@ -28,7 +28,7 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, OpenDotaClient cli
             .Query()
             .Player(accountId)
             .Significant(false)
-            .GetJsonResult<OpenDotaPlayer>(client, cancellationToken);
+            .GetJsonResult<Player>(client, cancellationToken);
 
         if (apiResult.IsError)
         {
@@ -38,7 +38,7 @@ internal class PlayerImporter(ILogger<PlayerImporter> logger, OpenDotaClient cli
 
         if (!PlayerFilter.IsValid(apiResult.GetValue()))
         {
-            logger.LogError("Invalid {type} data for {account}", nameof(OpenDotaPlayer), accountId);
+            logger.LogError("Invalid {type} data for {account}", nameof(Player), accountId);
             return 0;
         }
 

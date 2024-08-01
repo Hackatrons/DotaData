@@ -7,7 +7,7 @@ namespace DotaData.Cleansing.OpenDota;
 /// </summary>
 internal static class HeroFilter
 {
-    public static bool IsValid(OpenDotaHero hero) =>
+    public static bool IsValid(Hero hero) =>
         hero.Id is not null &&
         hero.AttackType is not null &&
         hero.Name is not null &&

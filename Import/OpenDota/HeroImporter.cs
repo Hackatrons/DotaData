@@ -28,7 +28,7 @@ internal class HeroImporter(ILogger<HeroImporter> logger, OpenDotaClient client,
             .Query()
             .Heroes()
             .Significant(false)
-            .GetJsonResults<OpenDotaHero>(client, cancellationToken);
+            .GetJsonResults<Hero>(client, cancellationToken);
 
         if (!apiResults.IsSuccess)
         {

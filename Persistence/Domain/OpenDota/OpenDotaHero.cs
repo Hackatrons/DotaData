@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Persistence.Domain.OpenDota;
 
-internal class Hero
+internal class OpenDotaHero
 {
     public long? Id { get; set; }
     public string? Name { get; set; }
