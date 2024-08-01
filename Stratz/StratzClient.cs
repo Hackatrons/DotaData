@@ -1,9 +1,8 @@
-﻿namespace DotaData.Stratz
-{
-    internal class StratzClient(HttpClient httpClient)
-    {
-        public HttpClient HttpClient => httpClient;
+﻿namespace DotaData.Stratz;
 
-        public StratzApiQuery Query() => new();
-    }
+internal class StratzClient(HttpClient httpClient)
+{
+    public HttpClient HttpClient => httpClient;
+
+    public StratzApiQuery Query() => new();
 }

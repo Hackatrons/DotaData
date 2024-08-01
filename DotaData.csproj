@@ -19,6 +19,8 @@
     <None Remove="Persistence\Migrations\008 - Create match table.sql" />
     <None Remove="Persistence\Migrations\009 - Create match import table.sql" />
     <None Remove="Persistence\Migrations\010 - Create match player detail table.sql" />
+    <None Remove="Persistence\Migrations\Stratz\001 - Create match table.sql" />
+    <None Remove="Persistence\Migrations\Stratz\002 - Create matchplayer  table.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +43,8 @@
     <EmbeddedResource Include="Persistence\Migrations\Base\004 - Create game mode table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\Base\002 - Create heroes table.sql" />
     <EmbeddedResource Include="Persistence\Migrations\OpenDota\002 - Create player match tables.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Stratz\002 - Create matchplayer  table.sql" />
+    <EmbeddedResource Include="Persistence\Migrations\Stratz\001 - Create match table.sql" />
   </ItemGroup>
 
   <ItemGroup>

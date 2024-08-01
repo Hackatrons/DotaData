@@ -1,4 +1,6 @@
-﻿namespace DotaData.Stratz;
+﻿using System.Collections.Specialized;
+
+namespace DotaData.Stratz;
 
 /// <summary>
 /// Builds Open Dota API queries.
@@ -9,13 +11,15 @@ internal class StratzApiQuery
 
     string? _path;
     string? _subPath;
+    int? _skip;
+    int? _take;
 
     /// <summary>
     /// Specify the player id for the API query.
     /// </summary>
     public StratzApiQuery Player(int accountId)
     {
-        _path = $"/api/v1/players/{accountId}";
+        _path = $"/api/v1/player/{accountId}";
         return this;
     }
 
@@ -29,12 +33,22 @@ internal class StratzApiQuery
     }
 
     /// <summary>
-    /// Specifies a specific match should be retrieved.
+    /// The number of results to return.
     /// </summary>
-    public StratzApiQuery Match(long matchId)
+    public StratzApiQuery Take(int take)
     {
-        // matches by themselves
-        _path = $"/api/v1/matches/{matchId}";
+        _take = take;
+        return this;
+    }
+
+    public StratzApiQuery TakeMax() => Take(50);
+
+    /// <summary>
+    /// The number of rows to skip.
+    /// </summary>
+    public StratzApiQuery Skip(int skip)
+    {
+        _skip = skip;
         return this;
     }
 
@@ -49,6 +63,14 @@ internal class StratzApiQuery
             builder.Path = _path + "/" + _subPath;
         else if (!string.IsNullOrEmpty(_path))
             builder.Path = _path;
+
+        var parameters = new NameValueCollection();
+        if (_skip is not null)
+            parameters.Add("skip", _skip.ToString());
+        if (_take is not null)
+            parameters.Add("take", _take.ToString());
+
+        builder.Query = string.Join("&", parameters.AllKeys.Select(key => $"{key}={parameters[key]}"));
 
         return builder.ToString();
     }

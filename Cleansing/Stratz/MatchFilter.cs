@@ -5,7 +5,7 @@ namespace DotaData.Cleansing.Stratz;
 /// <summary>
 /// Determines whether a result is good data or not (and should be discarded).
 /// </summary>
-internal static class PlayerMatchFilter
+internal static class MatchFilter
 {
-    public static bool IsValid(StratzMatchPlayer player) => player.SteamAccountId is not null && player.MatchId is not null;
+    public static bool IsValid(Match match) => match.Id is not null;
 }

@@ -1,10 +1,9 @@
-﻿namespace DotaData.Persistence.Domain.OpenDota
+﻿namespace DotaData.Persistence.Domain.OpenDota;
+
+internal class MatchImport
 {
-    internal class MatchImport
-    {
-        public long MatchId { get; set; }
-        public bool Success { get; set; }
-        public string? ErrorMessage { get; set; }
-        public int? ErrorCode { get; set; }
-    }
+    public long MatchId { get; set; }
+    public bool Success { get; set; }
+    public string? ErrorMessage { get; set; }
+    public int? ErrorCode { get; set; }
 }
