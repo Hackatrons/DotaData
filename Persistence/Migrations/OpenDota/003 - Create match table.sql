@@ -48,6 +48,6 @@ create table OpenDotaStaging.Match(
 	DireScore int null,
 	Patch int null,
 	Region int null,
-    constraint PK_OpenDotaStaging_Match primary key (MatchId)
+    constraint PK_OpenDota_Staging_Match primary key (MatchId)
 )
 go

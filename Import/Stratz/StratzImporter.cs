@@ -1,6 +1,6 @@
 ﻿namespace DotaData.Import.Stratz;
 
-internal class StratzImporter(PlayerMatchImporter playerMatchImporter)
+internal class StratzImporter(MatchImporter playerMatchImporter)
 {
     public async Task Import(CancellationToken stoppingToken)
     {

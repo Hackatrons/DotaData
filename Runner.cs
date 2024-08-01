@@ -19,7 +19,7 @@ internal class Runner(
         db.Init();
 
         await Task.WhenAll(
-            //openDotaImporter.Import(stoppingToken),
+            openDotaImporter.Import(stoppingToken),
             stratzImporter.Import(stoppingToken));
 
         await host.StopAsync(stoppingToken);

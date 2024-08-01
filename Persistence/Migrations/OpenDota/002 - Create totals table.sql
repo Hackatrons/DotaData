@@ -15,6 +15,6 @@ create table OpenDotaStaging.PlayerTotal(
     Field nvarchar(255) not null,
     [Count] int not null,
     [Sum] float not null,
-    constraint PK_OpenDotaStaging_PlayerTotal primary key (AccountId,Field)
+    constraint PK_OpenDota_Staging_PlayerTotal primary key (AccountId,Field)
 )
 go

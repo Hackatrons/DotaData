@@ -44,6 +44,6 @@ create table OpenDotaStaging.Player(
     SoloCompetitiveRank int null,
     CompetitiveRank int null,
     LeaderboardRank int null,
-    constraint PK_Staging_Player primary key (AccountId)
+    constraint PK_OpenDota_Staging_Player primary key (AccountId)
 )
 go

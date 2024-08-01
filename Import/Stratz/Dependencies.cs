@@ -17,22 +17,10 @@ internal static class Dependencies
                 x.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiToken);
                 x.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotaData", "1.0"));
             })
-            //.ConfigurePrimaryHttpMessageHandler(() =>
-            //{
-            //    var cookieContainer = new CookieContainer();
-
-            //    var handler = new HttpClientHandler
-            //    {
-            //        CookieContainer = cookieContainer,
-            //        UseCookies = true,
-            //    };
-
-            //    return handler;
-            //})
             .AddStandardResilienceHandler();
 
         services.AddSingleton<StratzImporter>();
-        services.AddSingleton<PlayerMatchImporter>();
+        services.AddSingleton<MatchImporter>();
 
         return services;
     }

@@ -18,7 +18,6 @@ internal static class Dependencies
         services.AddSingleton<HeroImporter>();
         services.AddSingleton<PlayerImporter>();
         services.AddSingleton<PlayerTotalImporter>();
-        services.AddSingleton<PlayerMatchImporter>();
         services.AddSingleton<MatchImporter>();
 
         return services;

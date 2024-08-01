@@ -15,7 +15,7 @@ namespace DotaData.Import.Stratz;
 /// <summary>
 /// Imports match information to the database.
 /// </summary>
-internal class PlayerMatchImporter(ILogger<PlayerMatchImporter> logger, StratzClient client, Database db)
+internal class MatchImporter(ILogger<MatchImporter> logger, StratzClient client, Database db)
 {
     public async Task Import(CancellationToken cancellationToken)
     {
