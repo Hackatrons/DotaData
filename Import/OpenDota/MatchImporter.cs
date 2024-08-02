@@ -19,7 +19,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
     public async Task Import(CancellationToken cancellationToken)
     {
         var imported = await Task.WhenAll(AccountId.All.Select(id => Import(id, cancellationToken)));
-        logger.LogInformation("Imported {count} new matches", imported);
+        logger.LogInformation("Imported {count} new matches", imported.Sum());
     }
 
     async Task<int> Import(int accountId, CancellationToken cancellationToken)
@@ -37,8 +37,8 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
             return 0;
         }
 
-        var idsToQuery = await GetMatchesToQuery(
-            accountId, playerMatches.GetValue()
+        var idsToQuery = await GetMatchesToQuery(playerMatches
+            .GetValue()
             .Where(x => x.MatchId is not null)
             .Select(x => x.MatchId.GetValueOrDefault()));
 
@@ -299,7 +299,7 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
         return affected;
     }
 
-    async Task<IEnumerable<long>> GetMatchesToQuery(int playerId, IEnumerable<long> allPlayerMatches)
+    async Task<IEnumerable<long>> GetMatchesToQuery(IEnumerable<long> allPlayerMatches)
     {
         await using var connection = db.CreateConnection();
 
@@ -309,13 +309,10 @@ internal class MatchImporter(ILogger<MatchImporter> logger, OpenDotaClient clien
             """
             select distinct MatchId
             from OpenDota.MatchPlayer MP
-            where AccountId = @AccountId
-            and MatchId not in
-            (
-                select MatchId from OpenDota.MatchImport
-                where (ErrorCode != 429 or datediff(day, getutcdate(), [Timestamp]) = 0)
-            )
-            """, param: new { AccountId = playerId });
+            union
+            select MatchId from OpenDota.MatchImport
+            where (ErrorCode != 429 or datediff(day, getutcdate(), [Timestamp]) = 0)
+            """);
 
         return allPlayerMatches.Except(toExclude);
     }
