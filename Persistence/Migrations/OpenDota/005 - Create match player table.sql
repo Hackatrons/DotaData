@@ -53,6 +53,9 @@ go
 alter table [OpenDota].[MatchPlayer] with check add constraint [FK_OpenDota_MatchPlayer_Match] foreign key ([MatchId]) references [OpenDota].[Match] ([MatchId])
 go
 
+alter table [OpenDota].[MatchPlayer] with check add constraint [FK_Stratz_MatchPlayer_HeroId] foreign key ([HeroId]) references [Reference].[Hero] ([Id])
+go
+
 create table OpenDotaStaging.MatchPlayer(
     MatchId bigint not null,
     AccountId int not null,

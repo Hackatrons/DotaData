@@ -34,6 +34,12 @@
 )
 go
 
+alter table [Stratz].[Match] with check add constraint [FK_Stratz_Match_GameMode] foreign key ([GameMode]) references [Reference].[GameMode] ([Id])
+go
+
+alter table [Stratz].[Match] with check add constraint [FK_Stratz_Match_LobbyType] foreign key ([LobbyType]) references [Reference].[LobbyType] ([Id])
+go
+
 create table StratzStaging.Match(
     Id bigint not null,
     DidRadiantWin bit null,

@@ -25,6 +25,12 @@
 )
 go
 
+alter table [OpenDota].[Match] with check add constraint [FK_OpenDota_Match_GameMode] foreign key ([GameMode]) references [Reference].[GameMode] ([Id])
+go
+
+alter table [OpenDota].[Match] with check add constraint [FK_OpenDota_Match_LobbyType] foreign key ([LobbyType]) references [Reference].[LobbyType] ([Id])
+go
+
 create table OpenDotaStaging.Match(
     MatchId bigint not null,
 	RadiantWin bit null,
