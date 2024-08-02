@@ -43,6 +43,9 @@
 )
 go
 
+alter table [Stratz].[MatchPlayer] with check add constraint [FK_Stratz_MatchPlayer_Match] foreign key ([MatchId]) references [Stratz].[Match] ([Id])
+go
+
 create table StratzStaging.MatchPlayer(
     MatchId bigint not null,
     PlayerSlot int null,
